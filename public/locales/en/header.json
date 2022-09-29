@@ -1,0 +1,12 @@
+{
+  "mode_buy": "BUY",
+  "mode_sell": "SELL",
+  "mode_pool": "POOL",
+  "connect_wallet": "Connect wallet",
+  "menu_account": "Account",
+  "menu_translate": "日本語に変更",
+  "menu_logout": "Logout",
+  "menu_twitter": "Twitter",
+  "menu_github": "GitHub",
+  "menu_docs": "Documents"
+}

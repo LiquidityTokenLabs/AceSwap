@@ -1,0 +1,20 @@
+{
+  "create_pool_btn": "Create pool",
+  "stake_btn": "Staking",
+  "auto_staking": "Auto Staking",
+  "empty_liquidity_msg": "You don't have staking pool",
+  "pool": "Pool",
+  "unbilled": "Unbilled compensation",
+  "setting": "Pool Settings",
+  "up_liquidity": "Increase liquidity",
+  "release_liquidity": "Unlock liquidity",
+  "bonding_curve": "Bonding Curve",
+  "volatilit": "Volatilit",
+  "divergence": "Divergence",
+  "get_rewards": "Get rewards",
+  "spot_price": "Spot price",
+  "history": "History",
+  "select_num": "Please select {{count}} more",
+  "succsess_staking": "Staked NFT",
+  "succsess_get": "Got reward"
+}

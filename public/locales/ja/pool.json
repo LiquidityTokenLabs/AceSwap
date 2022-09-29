@@ -1,0 +1,20 @@
+{
+  "create_pool_btn": "プールを作成",
+  "stake_btn": "ステーキング",
+  "auto_staking": "自動ステーキング",
+  "empty_liquidity_msg": "ステーキング中のプールが存在しません。",
+  "pool": "プール",
+  "unbilled": "未請求の報酬",
+  "setting": "プールの設定",
+  "up_liquidity": "流動性を上げる",
+  "release_liquidity": "流動性を解除",
+  "bonding_curve": "ボンディングカーブ",
+  "volatilit": "変動率",
+  "divergence": "売買乖離",
+  "get_rewards": "報酬を取得",
+  "spot_price": "スポットプライス",
+  "history": "履歴",
+  "select_num": "あと{{count}}つ選択してください",
+  "success_staking": "NFTをステーキングしました",
+  "success_get": "報酬を得ました"
+}

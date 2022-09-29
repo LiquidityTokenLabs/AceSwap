@@ -1,0 +1,7 @@
+{
+  "header": "Sell",
+  "buy_btn": "Sell",
+  "sell_count": "remaining",
+  "max_sellct": "Cannot be selected",
+  "success": "Sold NFT"
+}
