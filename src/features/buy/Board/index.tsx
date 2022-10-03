@@ -2,12 +2,12 @@ import { FC, useEffect, useState, Dispatch } from 'react'
 import { Component } from './Component'
 import { useMoralis, useMoralisWeb3Api } from 'react-moralis'
 import { Nft } from '../../../domains/Nft'
-import YOMISWAP_POOL_ABI from '../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
+import POOL_ABI from '../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
 import { ethers } from 'ethers'
 import {
-  YOMI_ASTAR_POOL,
+  POOL_ADDRESS,
   AMEDAMA_IMG,
-  YOMI_ASTAR_CONTRACT,
+  CONTRACT_ADDRESS,
   TOKEN_721_ABI,
 } from '../../../utils/Config'
 import { Props as ToastProps } from '../../../components/atoms/Toast/Toast'
@@ -33,8 +33,8 @@ export const BuyBoard: FC<Props> = ({ networkId, setToast }) => {
 
   const { isAuthenticated, user } = useMoralis()
 
-  const poolAddress = YOMI_ASTAR_POOL
-  const contractAddress = YOMI_ASTAR_CONTRACT
+  const poolAddress = POOL_ADDRESS
+  const contractAddress = CONTRACT_ADDRESS
 
   const checkChain = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -48,8 +48,8 @@ export const BuyBoard: FC<Props> = ({ networkId, setToast }) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
     const contract = new ethers.Contract(
-      YOMI_ASTAR_POOL,
-      YOMISWAP_POOL_ABI.abi,
+      POOL_ADDRESS,
+      POOL_ABI.abi,
       signer
     )
 

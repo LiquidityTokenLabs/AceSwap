@@ -6,12 +6,12 @@ import { ethers } from 'ethers'
 
 import { Props as ToastProps } from '../../../../components/atoms/Toast/Toast'
 import {
-  YOMI_ASTAR_POOL,
+  POOL_ADDRESS,
   TOKEN_721_ABI,
   AMEDAMA_IMG,
-  YOMI_ASTAR_CONTRACT,
+  CONTRACT_ADDRESS,
 } from '../../../../utils/Config'
-import YOMISWAP_POOL_ABI from '../../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
+import POOL_ABI from '../../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
 
 type Props = {
   setToast: Dispatch<ToastProps>
@@ -39,13 +39,13 @@ export const AutoStakingBoard: FC<Props> = ({ setToast }) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
     const contract = new ethers.Contract(
-      YOMI_ASTAR_POOL,
-      YOMISWAP_POOL_ABI.abi,
+      POOL_ADDRESS,
+      POOL_ABI.abi,
       signer
     )
 
     const addr = user.get('ethAddress')
-    const contractAddress = YOMI_ASTAR_CONTRACT
+    const contractAddress = CONTRACT_ADDRESS
 
     const nftContract = new ethers.Contract(
       contractAddress,

@@ -5,8 +5,8 @@ import { useRouter } from 'next/router'
 import { DetailBoard } from '../../src/features/pool/detail'
 import { Pool } from '../../src/domains/Pool'
 import { Dispatch, useEffect, useState } from 'react'
-import { YOMI_ASTAR_POOL, YOMI_SAMPLE_NAME } from '../../src/utils/Config'
-import YOMISWAP_POOL_ABI from '../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
+import { POOL_ADDRESS, NFT_NAME } from '../../src/utils/Config'
+import POOL_ABI from '../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
 import { ethers } from 'ethers'
 import { useMoralis, useMoralisWeb3Api } from 'react-moralis'
 import { Props as ToastProps } from '../../src/components/atoms/Toast/Toast'
@@ -30,7 +30,7 @@ const Detail: NextPage<Props> = ({ setToast }) => {
   const [chainId, setChainId] = useState(0)
   const [address, setAddress] = useState('')
 
-  const poolAddress = YOMI_ASTAR_POOL
+  const poolAddress = POOL_ADDRESS
 
   const pageId = poolAddress // id
 
@@ -63,7 +63,7 @@ const Detail: NextPage<Props> = ({ setToast }) => {
     if (!user) return
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(pageId, YOMISWAP_POOL_ABI.abi, signer)
+    const contract = new ethers.Contract(pageId, POOL_ABI.abi, signer)
 
     const delta = await contract.delta()
     const ubn = await contract.getUserInitBuyNum(user.get('ethAddress'))
@@ -87,7 +87,7 @@ const Detail: NextPage<Props> = ({ setToast }) => {
       curveType: curve,
       volatility: delta,
       divergence: delta,
-      poolName: YOMI_SAMPLE_NAME, //data.name,
+      poolName: NFT_NAME, //data.name,
       poolCount: 0,
     }
     setPool(p)

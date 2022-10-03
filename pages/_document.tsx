@@ -13,7 +13,7 @@ class Document extends NextDocument<Props> {
             sizes="16x16"
             href="/icons/yomiswap-logo.svg"
           />
-          <title>YomiSwap</title>
+          <title>AceSwap</title>
         </Head>
 
         <body>

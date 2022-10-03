@@ -21,8 +21,8 @@ import { ethers } from 'ethers'
 import {
   getNetworkConfByChainId,
   getNetworkInfoByChainId,
-  YOMI_ASTAR_CONTRACT,
-  YOMI_NETWORKS,
+  CONTRACT_ADDRESS,
+  NETWORKS,
 } from '../../../utils/Config'
 import Image from 'next/image'
 import { converDec2Hex } from '../../../utils/Format'
@@ -57,33 +57,11 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
       available: true,
       type: 'LINK',
       linkInfo: {
-        href: 'https://twitter.com/kazuma7o7',
+        href: 'https://twitter.com/YomiSwap',
         locale: router.locale || '',
         isOutside: true,
       },
       icon: <FaTwitter />,
-    },
-    {
-      label: 'GitHub',
-      available: true,
-      type: 'LINK',
-      linkInfo: {
-        href: 'https://github.com/Kazuma7/YomiSwap',
-        locale: router.locale || '',
-        isOutside: true,
-      },
-      icon: <FaGithub />,
-    },
-    {
-      label: 'Documents',
-      available: true,
-      type: 'LINK',
-      linkInfo: {
-        href: 'https://kazuma-i.gitbook.io/yomiswap/',
-        locale: router.locale || '',
-        isOutside: true,
-      },
-      icon: <FaBook />,
     },
     {
       label: 'Mint',
@@ -91,7 +69,7 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
       type: 'BUTTON',
       icon: <BsBox />,
       clickHandler: async () => {
-        const contractAddress = YOMI_ASTAR_CONTRACT
+        const contractAddress = CONTRACT_ADDRESS
         if (!user) return
         const addr = user.get('ethAddress')
         const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -226,7 +204,7 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
           mouseOver={networkSelectorMouseOver}
           mouseLeave={networkSelectorMouseLeave}
           isOpenMenu={isOpenMenu}
-          menuItems={YOMI_NETWORKS}
+          menuItems={NETWORKS}
           clickHandler={changeNetwork}
         />
         {address !== '' ? (

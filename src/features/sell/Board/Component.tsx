@@ -5,8 +5,8 @@ import { Nft } from '../../../domains/Nft'
 import { SellButton } from '../SellButton'
 
 import { ethers } from 'ethers'
-import YOMISWAP_POOL_ABI from '../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
-import { YOMI_ASTAR_CONTRACT, YOMI_ASTAR_POOL } from '../../../utils/Config'
+import POOL_ABI from '../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
+import { CONTRACT_ADDRESS, POOL_ADDRESS } from '../../../utils/Config'
 import TOKEN_721_ABI from '../../../../artifacts/contracts/SampleNFT.sol/SampleNFT.json'
 import { Color } from '../../../utils/Color'
 import { NftFrameWrapper } from './NftFrameWrapper'
@@ -36,8 +36,8 @@ export const Component: FC<Props> = ({
 
   const selectedCount = nfts.filter((nft) => nft.isActive).length
 
-  const poolAddress = YOMI_ASTAR_POOL
-  const contractAddress = YOMI_ASTAR_CONTRACT
+  const poolAddress = POOL_ADDRESS
+  const contractAddress = CONTRACT_ADDRESS
 
   const networkSelectorMouseOver = () => {}
   const networkSelectorMouseLeave = () => {}
@@ -53,7 +53,7 @@ export const Component: FC<Props> = ({
     const signer = provider.getSigner()
     const contract = new ethers.Contract(
       poolAddress,
-      YOMISWAP_POOL_ABI.abi,
+      POOL_ABI.abi,
       signer
     )
 
@@ -134,7 +134,7 @@ export const Component: FC<Props> = ({
     const signer = provider.getSigner()
     const contract = new ethers.Contract(
       poolAddress,
-      YOMISWAP_POOL_ABI.abi,
+      POOL_ABI.abi,
       signer
     )
     const tmpFee = await contract.getCalcSellInfo(selectedCount)

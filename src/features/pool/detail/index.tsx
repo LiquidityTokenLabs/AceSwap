@@ -4,16 +4,16 @@ import { useMoralis, useMoralisWeb3Api } from 'react-moralis'
 import { Nft } from '../../../domains/Nft'
 import { useQuery } from '@apollo/client'
 import GET_TRANSFERS from '../../../graphql/subgraph'
-import YOMISWAP_POOL_ABI from '../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
+import POOL_ABI from '../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
 import { ethers } from 'ethers'
 import { Network, Alchemy } from 'alchemy-sdk'
 import { round } from '../../../utils/Format'
 import {
   AMEDAMA_IMG,
   TOKEN_721_ABI,
-  YOMI_ASTAR_CONTRACT,
-  YOMI_ASTAR_POOL,
-  YOMI_CHAIN,
+  CONTRACT_ADDRESS,
+  POOL_ADDRESS,
+  CHAIN,
 } from '../../../utils/Config'
 import { Pool } from '../../../domains/Pool'
 import { History } from '../../../domains/History'
@@ -44,8 +44,8 @@ export const DetailBoard: FC<Props> = ({ pool, setToast }) => {
   const [chainId, setChainId] = useState(0)
   const [address, setAddress] = useState('')
 
-  const poolAddress = YOMI_ASTAR_POOL
-  const contractAddress = YOMI_ASTAR_CONTRACT
+  const poolAddress = POOL_ADDRESS
+  const contractAddress = CONTRACT_ADDRESS
 
   useEffect(() => {
     if (isAuthenticated && !!user) {
@@ -80,8 +80,8 @@ export const DetailBoard: FC<Props> = ({ pool, setToast }) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
     const contract = new ethers.Contract(
-      YOMI_ASTAR_POOL,
-      YOMISWAP_POOL_ABI.abi,
+      POOL_ADDRESS,
+      POOL_ABI.abi,
       signer
     )
 
@@ -122,8 +122,8 @@ export const DetailBoard: FC<Props> = ({ pool, setToast }) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
     const contract = new ethers.Contract(
-      YOMI_ASTAR_POOL,
-      YOMISWAP_POOL_ABI.abi,
+      POOL_ADDRESS,
+      POOL_ABI.abi,
       signer
     )
 
@@ -168,7 +168,7 @@ export const DetailBoard: FC<Props> = ({ pool, setToast }) => {
     const signer = provider.getSigner()
     const contract = new ethers.Contract(
       poolAddress,
-      YOMISWAP_POOL_ABI.abi,
+      POOL_ABI.abi,
       signer
     )
     const tmpSpotPrice = await contract.spotPrice()
