@@ -5,7 +5,7 @@ export const NFT_NAME = 'Astar Candy'
 
 export const POOL_ADDRESS = '0xc8ca8fcA2C7902D2c5298c33489Cd43D1134bdF4'
 export const CONTRACT_ADDRESS = '0x3002fA5EF0396700aaF3E1D2Fa74F4d7301CaD12'
-export const AMEDAMA_IMG = '/images/yomiswap_testnft.png'
+export const AMEDAMA_IMG = '/images/astarCandy.jpg'
 
 export const ASTAR_ID = 592
 
