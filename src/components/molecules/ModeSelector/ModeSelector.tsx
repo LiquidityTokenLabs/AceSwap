@@ -36,9 +36,12 @@ const Root = styled('span')({
   display: 'inline-flex',
   gap: '8px',
   padding: '2px',
-  borderRadius: '16px',
+  borderRadius: '100px',
+  border: `1px solid ${Color.blue}`,
   background: Color.pure_white,
   height: '50px',
+  boxShadow:
+    'rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px',
 })
 
 const ClickArea = styled('div')((p: { isActive: boolean }) => ({
@@ -58,7 +61,7 @@ const Select = styled('div')((p: { isActive: boolean }) => ({
   fontSize: '16px',
   fontWeight: p.isActive ? 600 : 400,
   ':hover': {
-    color: Color.text_black,
+    color: p.isActive ? Color.blue : Color.text_black,
   },
-  color: p.isActive ? Color.text_black : Color.text_gray,
+  color: p.isActive ? Color.blue : Color.text_gray,
 }))

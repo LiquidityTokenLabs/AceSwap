@@ -7,13 +7,13 @@ import { Nft } from '../../../domains/Nft'
 import { Color } from '../../../utils/Color'
 import { BuyButton } from '../BuyButton'
 
-import YOMISWAP_POOL_ABI from '../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
+import POOL_ABI from '../../../../artifacts/contracts/AceSwap.sol/AceSwap.json'
 import { ethers } from 'ethers'
 import {
   getNetworkConfByChainId,
-  YOMI_ASTAR_CONTRACT,
-  YOMI_ASTAR_POOL,
-  YOMI_SAMPLE_NAME,
+  CONTRACT_ADDRESS,
+  POOL_ADDRESS,
+  NFT_NAME,
 } from '../../../utils/Config'
 import TOKEN_721_ABI from '../../../../artifacts/contracts/SampleNFT.sol/SampleNFT.json'
 import { NftFrameWrapper } from './NftFrameWrapper'
@@ -46,8 +46,8 @@ export const Component: FC<Props> = ({
 
   const chainLogo = getNetworkConfByChainId(chainId)?.src
 
-  const poolAddress = YOMI_ASTAR_POOL
-  const contractAddress = YOMI_ASTAR_CONTRACT
+  const poolAddress = POOL_ADDRESS
+  const contractAddress = CONTRACT_ADDRESS
 
   const { user } = useMoralis()
 
@@ -64,11 +64,7 @@ export const Component: FC<Props> = ({
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const accounts = await provider.send('eth_requestAccounts', [])
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(
-      poolAddress,
-      YOMISWAP_POOL_ABI.abi,
-      signer
-    )
+    const contract = new ethers.Contract(poolAddress, POOL_ABI.abi, signer)
 
     const addr = user.get('ethAddress')
 
@@ -126,11 +122,7 @@ export const Component: FC<Props> = ({
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const accounts = await provider.send('eth_requestAccounts', [])
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(
-      poolAddress,
-      YOMISWAP_POOL_ABI.abi,
-      signer
-    )
+    const contract = new ethers.Contract(poolAddress, POOL_ABI.abi, signer)
     const tmpFee = await contract.getCalcBuyInfo(selectedCount)
     const fee = Number(ethers.utils.formatEther(tmpFee.toString()))
     setTotalFee(fee)
@@ -142,7 +134,7 @@ export const Component: FC<Props> = ({
           <Header>
             <Title>{title}</Title>
             <DropDown
-              label={YOMI_SAMPLE_NAME}
+              label={NFT_NAME}
               color={Color.base_white}
               src={chainLogo}
               mouseOver={networkSelectorMouseOver}
@@ -233,5 +225,5 @@ const BottomWrapper = styled('div')({
 
 const TotalPrice = styled('div')({
   fontSize: '16px',
-  color: Color.text_gray,
+  color: Color.blue,
 })

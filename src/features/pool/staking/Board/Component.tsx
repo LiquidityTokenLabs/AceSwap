@@ -10,11 +10,11 @@ import { Color } from '../../../../utils/Color'
 import { StakeButton } from '../StakeButton'
 import {
   TOKEN_721_ABI,
-  YOMI_ASTAR_CONTRACT,
-  YOMI_ASTAR_POOL,
+  CONTRACT_ADDRESS,
+  POOL_ADDRESS,
 } from '../../../../utils/Config'
 
-import YOMISWAP_POOL_ABI from '../../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
+import POOL_ABI from '../../../../../artifacts/contracts/AceSwap.sol/AceSwap.json'
 import { Props as ToastProps } from '../../../../components/atoms/Toast/Toast'
 
 type Props = {
@@ -37,8 +37,8 @@ export const Component: FC<Props> = ({ title, items, chainId, setToast }) => {
   const networkSelectorMouseOver = () => {}
   const networkSelectorMouseLeave = () => {}
 
-  const poolAddress = YOMI_ASTAR_POOL
-  const contractAddress = YOMI_ASTAR_CONTRACT
+  const poolAddress = POOL_ADDRESS
+  const contractAddress = CONTRACT_ADDRESS
 
   useEffect(() => {
     setNfts(items)
@@ -49,11 +49,7 @@ export const Component: FC<Props> = ({ title, items, chainId, setToast }) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const accounts = await provider.send('eth_requestAccounts', [])
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(
-      poolAddress,
-      YOMISWAP_POOL_ABI.abi,
-      signer
-    )
+    const contract = new ethers.Contract(poolAddress, POOL_ABI.abi, signer)
 
     const filter = contract.filters.StakeNFT()
 

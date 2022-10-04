@@ -5,8 +5,8 @@ import { Nft } from '../../../domains/Nft'
 import { SellButton } from '../SellButton'
 
 import { ethers } from 'ethers'
-import YOMISWAP_POOL_ABI from '../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
-import { YOMI_ASTAR_CONTRACT, YOMI_ASTAR_POOL } from '../../../utils/Config'
+import POOL_ABI from '../../../../artifacts/contracts/AceSwap.sol/AceSwap.json'
+import { CONTRACT_ADDRESS, POOL_ADDRESS } from '../../../utils/Config'
 import TOKEN_721_ABI from '../../../../artifacts/contracts/SampleNFT.sol/SampleNFT.json'
 import { Color } from '../../../utils/Color'
 import { NftFrameWrapper } from './NftFrameWrapper'
@@ -36,8 +36,8 @@ export const Component: FC<Props> = ({
 
   const selectedCount = nfts.filter((nft) => nft.isActive).length
 
-  const poolAddress = YOMI_ASTAR_POOL
-  const contractAddress = YOMI_ASTAR_CONTRACT
+  const poolAddress = POOL_ADDRESS
+  const contractAddress = CONTRACT_ADDRESS
 
   const networkSelectorMouseOver = () => {}
   const networkSelectorMouseLeave = () => {}
@@ -51,11 +51,7 @@ export const Component: FC<Props> = ({
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const accounts = await provider.send('eth_requestAccounts', [])
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(
-      poolAddress,
-      YOMISWAP_POOL_ABI.abi,
-      signer
-    )
+    const contract = new ethers.Contract(poolAddress, POOL_ABI.abi, signer)
 
     const swapTokenIdList = ids //フロント側からの入力
     const minExpectFee = await contract.getCalcSellInfo(ids.length) //フロント側からの入力
@@ -132,11 +128,7 @@ export const Component: FC<Props> = ({
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const accounts = await provider.send('eth_requestAccounts', [])
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(
-      poolAddress,
-      YOMISWAP_POOL_ABI.abi,
-      signer
-    )
+    const contract = new ethers.Contract(poolAddress, POOL_ABI.abi, signer)
     const tmpFee = await contract.getCalcSellInfo(selectedCount)
     const fee = Number(ethers.utils.formatEther(tmpFee.toString()))
     setTotalFee(fee)
@@ -228,5 +220,5 @@ const BottomWrapper = styled('div')({
 
 const TotalPrice = styled('div')({
   fontSize: '16px',
-  color: Color.text_gray,
+  color: Color.blue,
 })

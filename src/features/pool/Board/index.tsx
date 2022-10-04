@@ -1,10 +1,10 @@
 import { Dispatch, FC, useEffect, useState } from 'react'
 import { Component } from './Component'
 import { Pool } from '../../../domains/Pool'
-import { YOMI_ASTAR_POOL, YOMI_SAMPLE_NAME } from '../../../utils/Config'
+import { POOL_ADDRESS, NFT_NAME } from '../../../utils/Config'
 import { useMoralis, useMoralisWeb3Api } from 'react-moralis'
 import { ethers } from 'ethers'
-import YOMISWAP_POOL_ABI from '../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
+import POOL_ABI from '../../../../artifacts/contracts/AceSwap.sol/AceSwap.json'
 import Web3Api from 'moralis-v1/types/generated/web3Api'
 import { Props as ToastProps } from '../../../components/atoms/Toast/Toast'
 
@@ -58,11 +58,7 @@ export const PoolBoard: FC<Props> = ({ setToast }) => {
     if (!user) return
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(
-      YOMI_ASTAR_POOL,
-      YOMISWAP_POOL_ABI.abi,
-      signer
-    )
+    const contract = new ethers.Contract(POOL_ADDRESS, POOL_ABI.abi, signer)
 
     const id = await contract.collectionAddress()
     const ubn = await contract.getUserInitBuyNum(user.get('ethAddress'))
@@ -80,7 +76,7 @@ export const PoolBoard: FC<Props> = ({ setToast }) => {
       curveType: curve,
       volatility: d, // ethers.utils.formatEther(delta.toNumber()),
       divergence: d, // ethers.utils.formatEther(delta.toNumber()),
-      poolName: YOMI_SAMPLE_NAME, //data.name,
+      poolName: NFT_NAME, //data.name,
       poolCount: n,
     }
     setPools([p])

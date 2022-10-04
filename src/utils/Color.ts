@@ -10,6 +10,7 @@ export const Color = {
   disable: '#E0E0E0',
   error: '#DD0000',
   success: '#2E7D32',
+  blue: '#668FCB',
 }
 
 export const hexToRgb = (hex: string) => {

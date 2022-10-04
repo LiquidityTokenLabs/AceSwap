@@ -21,8 +21,8 @@ import { ethers } from 'ethers'
 import {
   getNetworkConfByChainId,
   getNetworkInfoByChainId,
-  YOMI_ASTAR_CONTRACT,
-  YOMI_NETWORKS,
+  CONTRACT_ADDRESS,
+  NETWORKS,
 } from '../../../utils/Config'
 import Image from 'next/image'
 import { converDec2Hex } from '../../../utils/Format'
@@ -57,33 +57,11 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
       available: true,
       type: 'LINK',
       linkInfo: {
-        href: 'https://twitter.com/kazuma7o7',
+        href: 'https://twitter.com/YomiSwap',
         locale: router.locale || '',
         isOutside: true,
       },
       icon: <FaTwitter />,
-    },
-    {
-      label: 'GitHub',
-      available: true,
-      type: 'LINK',
-      linkInfo: {
-        href: 'https://github.com/Kazuma7/YomiSwap',
-        locale: router.locale || '',
-        isOutside: true,
-      },
-      icon: <FaGithub />,
-    },
-    {
-      label: 'Documents',
-      available: true,
-      type: 'LINK',
-      linkInfo: {
-        href: 'https://kazuma-i.gitbook.io/yomiswap/',
-        locale: router.locale || '',
-        isOutside: true,
-      },
-      icon: <FaBook />,
     },
     {
       label: 'Mint',
@@ -91,7 +69,7 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
       type: 'BUTTON',
       icon: <BsBox />,
       clickHandler: async () => {
-        const contractAddress = YOMI_ASTAR_CONTRACT
+        const contractAddress = CONTRACT_ADDRESS
         if (!user) return
         const addr = user.get('ethAddress')
         const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -140,6 +118,7 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
       })
     } catch (Exeption) {}
   }
+
   const addChain = async (id: number) => {
     try {
       const networkInfo = getNetworkInfoByChainId(id)
@@ -201,15 +180,13 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
   const changeNetwork = (id: number) => {
     doChainChange(id)
   }
+
   return (
     <SHeader>
       <LeftNav>
-        <Image
-          src="/icons/yomiswap-textlogo.svg"
-          alt="yomiswap logo"
-          height={48}
-          width={240}
-        />
+
+        <Name>AceSwap</Name>
+
       </LeftNav>
       <Nav>
         <ModeSelector
@@ -219,16 +196,6 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
         />
       </Nav>
       <RightNav>
-        <DropDown
-          label={chainName}
-          src={chainSrc}
-          color={Color.pure_white}
-          mouseOver={networkSelectorMouseOver}
-          mouseLeave={networkSelectorMouseLeave}
-          isOpenMenu={isOpenMenu}
-          menuItems={YOMI_NETWORKS}
-          clickHandler={changeNetwork}
-        />
         {address !== '' ? (
           <Address>{showInfo}</Address>
         ) : (
@@ -237,6 +204,7 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
               label={'Connect wallet'}
               margin="12px 16px"
               color={Color.pure_white}
+              fontColor={Color.blue}
               onClick={connectWallet}
             />
           </ButtonWrapper>
@@ -269,8 +237,6 @@ const Nav = styled('div')({
   left: '50%',
   top: '14px',
   transform: 'translate(-50%, 0)',
-  boxShadow:
-    'rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px',
 })
 
 const RightNav = styled('div')({
@@ -300,25 +266,33 @@ const IconWrapper = styled('div')({
   display: 'grid',
   justifyItems: 'center',
   alignItems: 'center',
+  border: `1px solid ${Color.blue}`,
+  color: Color.blue,
 
   boxShadow:
     'rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px',
 
   boxSizing: 'border-box',
-  ':hover': {
-    border: `1px solid ${Color.gray}`,
-  },
 })
 
 const Address = styled('div')({
   background: Color.pure_white,
+  color: Color.blue,
   borderRadius: '16px',
   height: '50px',
   padding: '12px 16px',
+  border: `1px solid ${Color.blue}`,
   boxShadow:
     'rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px',
 })
 
 const ButtonWrapper = styled('div')({
   height: '50px',
+})
+
+const Name = styled('p')({
+  color: Color.blue,
+  fontSize: '24px',
+  height: '48px',
+  lineHeight: '48px',
 })

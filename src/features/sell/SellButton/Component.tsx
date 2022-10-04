@@ -13,6 +13,7 @@ export const Component: FC<Props> = ({ text, onClick }) => {
       label={text}
       margin="12px 73px"
       color={Color.base_white}
+      fontColor={Color.base_white}
       onClick={onClick}
       isFloat={false}
     />

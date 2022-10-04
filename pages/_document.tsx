@@ -11,9 +11,9 @@ class Document extends NextDocument<Props> {
             rel="icon"
             type="image/png"
             sizes="16x16"
-            href="/icons/yomiswap-logo.svg"
+            href="/icons/aceswap-logo.svg"
           />
-          <title>YomiSwap</title>
+          <title>AceSwap</title>
         </Head>
 
         <body>

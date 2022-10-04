@@ -1,11 +1,11 @@
-export const YOMI_CHAIN = 'Astar'
-export const YOMI_CURVE = 'Linear'
+export const CHAIN = 'Astar'
+export const BONDING_CURVE = 'Linear'
 
-export const YOMI_SAMPLE_NAME = 'Astar Candy'
+export const NFT_NAME = 'Astar Candy'
 
-export const YOMI_ASTAR_POOL = '0xc8ca8fcA2C7902D2c5298c33489Cd43D1134bdF4'
-export const YOMI_ASTAR_CONTRACT = '0x3002fA5EF0396700aaF3E1D2Fa74F4d7301CaD12'
-export const AMEDAMA_IMG = '/images/yomiswap_testnft.png'
+export const POOL_ADDRESS = '0x1112FF8c7284Af3185102e6d0c80F764209D2d1e'
+export const CONTRACT_ADDRESS = '0x2E24922cc98C5d4A38d9D435a5C5bCaB956d103F'
+export const AMEDAMA_IMG = '/images/astarCandy.jpg'
 
 export const ASTAR_ID = 592
 
@@ -14,7 +14,7 @@ export const TOKEN_721_ABI = [
   'function getAllHeldIds(address user) external view returns (uint256[] memory)',
 ]
 
-export const YOMI_NETWORKS = [
+export const NETWORKS = [
   {
     id: 5,
     name: 'goeri',
@@ -40,7 +40,7 @@ export const getNetworkConfByChainId = (id: number) => {
   return {
     chainName: 'Astar',
     src: '/icons/astar.jpeg',
-    poolAddress: YOMI_ASTAR_POOL,
-    contractAddress: YOMI_ASTAR_CONTRACT,
+    poolAddress: POOL_ADDRESS,
+    contractAddress: CONTRACT_ADDRESS,
   }
 }
