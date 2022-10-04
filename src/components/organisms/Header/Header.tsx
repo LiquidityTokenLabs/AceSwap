@@ -184,7 +184,7 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
       <LeftNav>
         <Image
           src="/icons/yomiswap-textlogo.svg"
-          alt="yomiswap logo"
+          alt="aceswap logo"
           height={48}
           width={240}
         />

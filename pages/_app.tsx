@@ -12,7 +12,7 @@ import { Color } from '../src/utils/Color'
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  uri: 'https://api.studio.thegraph.com/query/34004/yomiswap/v0.0.8',
+  uri: 'https://api.studio.thegraph.com/query/34004/aceswap/v0.0.8',
 })
 
 function MyApp({ Component, pageProps }: AppProps) {
