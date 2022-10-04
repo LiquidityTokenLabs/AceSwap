@@ -6,7 +6,6 @@ import { useQuery } from '@apollo/client'
 import GET_TRANSFERS from '../../../graphql/subgraph'
 import POOL_ABI from '../../../../artifacts/contracts/AceSwap.sol/AceSwap.json'
 import { ethers } from 'ethers'
-import { Network, Alchemy } from 'alchemy-sdk'
 import { round } from '../../../utils/Format'
 import {
   AMEDAMA_IMG,
@@ -164,6 +163,7 @@ export const DetailBoard: FC<Props> = ({ pool, setToast }) => {
     const tmpSellNum = await contract.sellNum()
     const tmpUserFee = await contract.getUserFee(user?.get('ethAddress'))
     const tmpDelta = await contract.delta()
+
     setSpotPrice(Number(ethers.utils.formatEther(tmpSpotPrice.toString())))
     setBuyNum(tmpBuyNum)
     setSellNum(tmpSellNum)

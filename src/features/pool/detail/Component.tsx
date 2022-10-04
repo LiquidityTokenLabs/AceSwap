@@ -178,8 +178,6 @@ export const Component: FC<Props> = ({
       setToast(newToast)
     })
 
-    const accounts = await provider.send('eth_requestAccounts', [])
-
     const swapTokenIdList = nfts
       .filter((nft) => nft.isActive)
       .map((nft) => nft.id)
@@ -234,7 +232,7 @@ export const Component: FC<Props> = ({
         <Button
           label="Increase liquidity"
           margin="20px 32px"
-          color={Color.pink}
+          color={Color.blue}
           fontColor={Color.pure_white}
           fontSize="20px"
           onClick={done}
@@ -249,7 +247,7 @@ export const Component: FC<Props> = ({
         <Button
           label="Unlock liquidity"
           margin="20px 32px"
-          color={Color.pink}
+          color={Color.blue}
           fontColor={Color.pure_white}
           fontSize="20px"
           disabled={!enabled}
