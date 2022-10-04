@@ -194,7 +194,7 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
       </LeftNav>
       <Nav>
         <ModeSelector
-          options={['Buy', 'SELL', 'POOL']}
+          options={['Buy', 'Sell', 'Pool']}
           activeNum={activeNum}
           setActiveNum={setActiveNum}
         />
@@ -213,6 +213,7 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
               margin="12px 16px"
               color={Color.pure_white}
               fontColor={Color.blue}
+              isFloat={false}
               onClick={connectWallet}
             />
           </ButtonWrapper>
@@ -267,7 +268,7 @@ const LeftNav = styled('div')({
 
 const IconWrapper = styled('div')({
   background: Color.pure_white,
-  borderRadius: '16px',
+  borderRadius: '100px',
   width: '50px',
   height: '50px',
 
@@ -277,8 +278,8 @@ const IconWrapper = styled('div')({
   border: `1px solid ${Color.blue}`,
   color: Color.blue,
 
-  boxShadow:
-    'rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px',
+  // boxShadow:
+  //   'rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px',
 
   boxSizing: 'border-box',
 })
@@ -286,12 +287,12 @@ const IconWrapper = styled('div')({
 const Address = styled('div')({
   background: Color.pure_white,
   color: Color.blue,
-  borderRadius: '16px',
+  borderRadius: '100px',
   height: '50px',
   padding: '12px 16px',
   border: `1px solid ${Color.blue}`,
-  boxShadow:
-    'rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px',
+  // boxShadow:
+  //   'rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px',
 })
 
 const ButtonWrapper = styled('div')({

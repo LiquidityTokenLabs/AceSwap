@@ -2,7 +2,7 @@ import { Dispatch, FC, useEffect, useState } from 'react'
 import { Component } from './Component'
 import { useMoralis, useMoralisWeb3Api } from 'react-moralis'
 import { Nft } from '../../../domains/Nft'
-import { useQuery } from '@apollo/client'
+// import { useQuery } from '@apollo/client'
 import GET_TRANSFERS from '../../../graphql/subgraph'
 import POOL_ABI from '../../../../artifacts/contracts/AceSwap.sol/AceSwap.json'
 import { ethers } from 'ethers'
@@ -25,7 +25,7 @@ type Props = {
 }
 
 export const DetailBoard: FC<Props> = ({ pool, setToast }) => {
-  const { loading, error, data } = useQuery(GET_TRANSFERS)
+  // const { loading, error, data } = useQuery(GET_TRANSFERS)
   const [eventList, setEventList] = useState<History[]>([])
 
   const [buyNum, setBuyNum] = useState('')
@@ -171,24 +171,24 @@ export const DetailBoard: FC<Props> = ({ pool, setToast }) => {
     setUserFee(ethers.utils.formatEther(tmpUserFee.toString()))
   }
 
-  useEffect(() => {
-    if (!loading && !error && data) {
-      const d = data.accountToStakes
-        .map((e: any) => {
-          const res: History = {
-            id: converHex2Dec(e.id),
-            type: e.type,
-            address: e.address,
-            tokenIds: e.tokenIds,
-          }
-          return res
-        })
-        .sort((a: History, b: History) => {
-          return a.id - b.id
-        })
-      setEventList(d)
-    }
-  }, [loading, error, data])
+  // useEffect(() => {
+  //   if (!loading && !error && data) {
+  //     const d = data.accountToStakes
+  //       .map((e: any) => {
+  //         const res: History = {
+  //           id: converHex2Dec(e.id),
+  //           type: e.type,
+  //           address: e.address,
+  //           tokenIds: e.tokenIds,
+  //         }
+  //         return res
+  //       })
+  //       .sort((a: History, b: History) => {
+  //         return a.id - b.id
+  //       })
+  //     setEventList(d)
+  //   }
+  // }, [loading, error, data])
 
   return (
     <Component

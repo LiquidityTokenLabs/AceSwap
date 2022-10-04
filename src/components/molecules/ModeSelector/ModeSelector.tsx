@@ -40,12 +40,12 @@ const Root = styled('span')({
   border: `1px solid ${Color.blue}`,
   background: Color.pure_white,
   height: '50px',
-  boxShadow:
-    'rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px',
+  // boxShadow:
+  //   'rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px',
 })
 
 const ClickArea = styled('div')((p: { isActive: boolean }) => ({
-  borderRadius: '16px',
+  borderRadius: '100px',
   cursor: 'pointer',
   ':hover': {
     color: Color.text_black,

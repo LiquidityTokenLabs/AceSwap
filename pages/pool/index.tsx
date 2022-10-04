@@ -25,6 +25,7 @@ const Buy: NextPage<Props> = ({ setToast }) => {
               margin="12px 16px"
               color={Color.pure_white}
               fontColor={Color.blue}
+              isFloat={false}
               onClick={() => router.push('pool/autostaking')}
             />
             <Button
@@ -32,6 +33,7 @@ const Buy: NextPage<Props> = ({ setToast }) => {
               margin="12px 16px"
               color={Color.pure_white}
               fontColor={Color.blue}
+              isFloat={false}
               onClick={() => ''}
             />
           </BtnWrapper>

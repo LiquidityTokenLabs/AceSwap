@@ -10,10 +10,10 @@ import { useState } from 'react'
 import { Toast, Props as ToastProps } from '../src/components/atoms/Toast/Toast'
 import { Color } from '../src/utils/Color'
 
-const client = new ApolloClient({
-  cache: new InMemoryCache(),
-  uri: 'https://api.studio.thegraph.com/query/34004/aceswap/v0.0.8',
-})
+// const client = new ApolloClient({
+//   cache: new InMemoryCache(),
+//   uri: 'https://api.studio.thegraph.com/query/34004/aceswap/v0.0.8',
+// })
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [networkId, setNetworkId] = useState(5)
@@ -24,13 +24,13 @@ function MyApp({ Component, pageProps }: AppProps) {
       appId={process.env.NEXT_PUBLIC_APP_ID || ''}>
       <Header setNetworkId={setNetworkId} />
       <Context>
-        <ApolloProvider client={client}>
-          <Component
-            {...pageProps}
-            networkId={networkId}
-            setToast={setToastProps}
-          />
-        </ApolloProvider>
+        {/* <ApolloProvider client={client}> */}
+        <Component
+          {...pageProps}
+          networkId={networkId}
+          setToast={setToastProps}
+        />
+        {/* </ApolloProvider> */}
       </Context>
       <CloudWrapper></CloudWrapper>
       <Toast {...toastProps} />
