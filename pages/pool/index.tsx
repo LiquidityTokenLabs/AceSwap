@@ -24,12 +24,14 @@ const Buy: NextPage<Props> = ({ setToast }) => {
               label="Auto Staking"
               margin="12px 16px"
               color={Color.pure_white}
+              fontColor={Color.blue}
               onClick={() => router.push('pool/autostaking')}
             />
             <Button
               label="Create pool"
               margin="12px 16px"
               color={Color.pure_white}
+              fontColor={Color.blue}
               onClick={() => ''}
             />
           </BtnWrapper>
