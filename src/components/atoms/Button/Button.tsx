@@ -52,15 +52,12 @@ const getBorderColor = (color: string) => {
 }
 
 const Btn = styled('button')((p: { color: string; isFloat: boolean }) => ({
-  background: p.color,
+  background: p.isFloat ? p.color : Color.blue,
   borderRadius: '16px',
   boxSizing: 'border-box',
-  border: `1px solid ${p.color}`,
+  border: `1px solid ${Color.blue}`,
   cursor: 'pointer',
   padding: '0',
-  ':hover': {
-    border: `1px solid ${getBorderColor(p.color)}`,
-  },
   boxShadow: p.isFloat
     ? 'rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px'
     : 'none',

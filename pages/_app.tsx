@@ -8,6 +8,7 @@ import { keyframes } from '@emotion/react'
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 import { useState } from 'react'
 import { Toast, Props as ToastProps } from '../src/components/atoms/Toast/Toast'
+import { Color } from '../src/utils/Color'
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
@@ -31,40 +32,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           />
         </ApolloProvider>
       </Context>
-      <CloudWrapper>
-        <PinkCloud>
-          <Image
-            src="/images/cloud_pink.svg"
-            alt="Picture of the author"
-            width={769}
-            height={514}
-          />
-        </PinkCloud>
-        <WhiteCloud>
-          <Image
-            src="/images/cloud_white.svg"
-            alt="Picture of the author"
-            width={769}
-            height={514}
-          />
-        </WhiteCloud>
-        <YellowCloud>
-          <Image
-            src="/images/cloud_yellow.svg"
-            alt="Picture of the author"
-            width={769}
-            height={514}
-          />
-        </YellowCloud>
-        <BlueCloud>
-          <Image
-            src="/images/cloud_blue.svg"
-            alt="Picture of the author"
-            width={769}
-            height={514}
-          />
-        </BlueCloud>
-      </CloudWrapper>
+      <CloudWrapper></CloudWrapper>
       <Toast {...toastProps} />
     </MoralisProvider>
   )
@@ -79,7 +47,7 @@ const CloudWrapper = styled('div')({
   top: 0,
   left: 0,
   zIndex: -1,
-  background: 'linear-gradient(269.82deg, #D2BAEE 0.04%, #A8C1F3 99.74%)',
+  background: Color.base_white,
   overflow: 'hidden',
 })
 

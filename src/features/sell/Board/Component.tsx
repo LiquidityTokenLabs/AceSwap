@@ -51,11 +51,7 @@ export const Component: FC<Props> = ({
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const accounts = await provider.send('eth_requestAccounts', [])
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(
-      poolAddress,
-      POOL_ABI.abi,
-      signer
-    )
+    const contract = new ethers.Contract(poolAddress, POOL_ABI.abi, signer)
 
     const swapTokenIdList = ids //フロント側からの入力
     const minExpectFee = await contract.getCalcSellInfo(ids.length) //フロント側からの入力
@@ -132,11 +128,7 @@ export const Component: FC<Props> = ({
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const accounts = await provider.send('eth_requestAccounts', [])
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(
-      poolAddress,
-      POOL_ABI.abi,
-      signer
-    )
+    const contract = new ethers.Contract(poolAddress, POOL_ABI.abi, signer)
     const tmpFee = await contract.getCalcSellInfo(selectedCount)
     const fee = Number(ethers.utils.formatEther(tmpFee.toString()))
     setTotalFee(fee)
@@ -228,5 +220,5 @@ const BottomWrapper = styled('div')({
 
 const TotalPrice = styled('div')({
   fontSize: '16px',
-  color: Color.text_gray,
+  color: Color.blue,
 })

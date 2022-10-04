@@ -197,16 +197,6 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
         />
       </Nav>
       <RightNav>
-        <DropDown
-          label={chainName}
-          src={chainSrc}
-          color={Color.pure_white}
-          mouseOver={networkSelectorMouseOver}
-          mouseLeave={networkSelectorMouseLeave}
-          isOpenMenu={isOpenMenu}
-          menuItems={NETWORKS}
-          clickHandler={changeNetwork}
-        />
         {address !== '' ? (
           <Address>{showInfo}</Address>
         ) : (
@@ -247,8 +237,6 @@ const Nav = styled('div')({
   left: '50%',
   top: '14px',
   transform: 'translate(-50%, 0)',
-  boxShadow:
-    'rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px',
 })
 
 const RightNav = styled('div')({
@@ -278,14 +266,12 @@ const IconWrapper = styled('div')({
   display: 'grid',
   justifyItems: 'center',
   alignItems: 'center',
+  border: `1px solid ${Color.blue}`,
 
   boxShadow:
     'rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px',
 
   boxSizing: 'border-box',
-  ':hover': {
-    border: `1px solid ${Color.gray}`,
-  },
 })
 
 const Address = styled('div')({
@@ -293,6 +279,7 @@ const Address = styled('div')({
   borderRadius: '16px',
   height: '50px',
   padding: '12px 16px',
+  border: `1px solid ${Color.blue}`,
   boxShadow:
     'rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px',
 })
