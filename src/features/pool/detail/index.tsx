@@ -4,7 +4,7 @@ import { useMoralis, useMoralisWeb3Api } from 'react-moralis'
 import { Nft } from '../../../domains/Nft'
 import { useQuery } from '@apollo/client'
 import GET_TRANSFERS from '../../../graphql/subgraph'
-import POOL_ABI from '../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
+import POOL_ABI from '../../../../artifacts/contracts/AceSwap.sol/AceSwap.json'
 import { ethers } from 'ethers'
 import { round } from '../../../utils/Format'
 import {

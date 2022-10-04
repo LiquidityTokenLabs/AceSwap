@@ -2,7 +2,7 @@ import { FC, useEffect, useState, Dispatch } from 'react'
 import { Component } from './Component'
 import { useMoralis, useMoralisWeb3Api } from 'react-moralis'
 import { Nft } from '../../../domains/Nft'
-import POOL_ABI from '../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
+import POOL_ABI from '../../../../artifacts/contracts/AceSwap.sol/AceSwap.json'
 import { ethers } from 'ethers'
 import {
   POOL_ADDRESS,
@@ -47,11 +47,7 @@ export const BuyBoard: FC<Props> = ({ networkId, setToast }) => {
     if (!user) return
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(
-      POOL_ADDRESS,
-      POOL_ABI.abi,
-      signer
-    )
+    const contract = new ethers.Contract(POOL_ADDRESS, POOL_ABI.abi, signer)
 
     const tmpSpotPrice = await contract.spotPrice()
     const sp = Number(ethers.utils.formatEther(tmpSpotPrice.toString()))

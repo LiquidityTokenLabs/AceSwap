@@ -5,7 +5,7 @@ import { Button } from '../../../components/atoms/Button/Button'
 import { Color } from '../../../utils/Color'
 import { Nft } from '../../../domains/Nft'
 import { NftFrame } from '../../../components/molecules/NftFrame/NftFrame'
-import POOL_ABI from '../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
+import POOL_ABI from '../../../../artifacts/contracts/AceSwap.sol/AceSwap.json'
 import { useMoralis } from 'react-moralis'
 import { ethers } from 'ethers'
 import {
