@@ -23,9 +23,11 @@ import {
   getNetworkInfoByChainId,
   CONTRACT_ADDRESS,
   NETWORKS,
+  ASTAR_ID,
 } from '../../../utils/Config'
 import Image from 'next/image'
 import { converDec2Hex } from '../../../utils/Format'
+import { NetworkSwitcher } from '../../molecules/NetworkSwitcher/NetworkSwitcher'
 
 type Props = {
   setNetworkId: Dispatch<number>
@@ -101,9 +103,13 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
     const tmpInfo = await provider.ready
     const tmpChainId = tmpInfo.chainId
 
-    setChainName('Aster')
-    setChainSrc('/icons/astar.jpeg')
-    setChainId(tmpChainId)
+    if (tmpChainId === ASTAR_ID) {
+      setChainName('Astar')
+      setChainSrc('/icons/astar.jpeg')
+      setChainId(tmpChainId)
+    } else {
+      setChainName('ERR')
+    }
   }
 
   const changeGoerli = async (id: number) => {
@@ -184,9 +190,7 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
   return (
     <SHeader>
       <LeftNav>
-
         <Name>AceSwap</Name>
-
       </LeftNav>
       <Nav>
         <ModeSelector
@@ -196,6 +200,10 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
         />
       </Nav>
       <RightNav>
+        <NetworkSwitcher
+          chainName={chainName}
+          changeAstar={() => addChain(ASTAR_ID)}
+        />
         {address !== '' ? (
           <Address>{showInfo}</Address>
         ) : (

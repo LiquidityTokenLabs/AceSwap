@@ -8,7 +8,7 @@ export const Color = {
   text_gray: '#8E8E8E',
   text_disable: '#CECECE',
   disable: '#E0E0E0',
-  error: '#DD0000',
+  error: '#C93E35',
   success: '#2E7D32',
   blue: '#668FCB',
 }
