@@ -118,6 +118,7 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
       })
     } catch (Exeption) {}
   }
+
   const addChain = async (id: number) => {
     try {
       const networkInfo = getNetworkInfoByChainId(id)
@@ -179,15 +180,11 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
   const changeNetwork = (id: number) => {
     doChainChange(id)
   }
+
   return (
     <SHeader>
       <LeftNav>
-        <Image
-          src="/icons/yomiswap-textlogo.svg"
-          alt="yomiswap logo"
-          height={48}
-          width={240}
-        />
+        <Name>AceSwap</Name>
       </LeftNav>
       <Nav>
         <ModeSelector
@@ -205,6 +202,7 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
               label={'Connect wallet'}
               margin="12px 16px"
               color={Color.pure_white}
+              fontColor={Color.blue}
               onClick={connectWallet}
             />
           </ButtonWrapper>
@@ -267,6 +265,7 @@ const IconWrapper = styled('div')({
   justifyItems: 'center',
   alignItems: 'center',
   border: `1px solid ${Color.blue}`,
+  color: Color.blue,
 
   boxShadow:
     'rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px',
@@ -276,6 +275,7 @@ const IconWrapper = styled('div')({
 
 const Address = styled('div')({
   background: Color.pure_white,
+  color: Color.blue,
   borderRadius: '16px',
   height: '50px',
   padding: '12px 16px',
@@ -286,4 +286,11 @@ const Address = styled('div')({
 
 const ButtonWrapper = styled('div')({
   height: '50px',
+})
+
+const Name = styled('p')({
+  color: Color.blue,
+  fontSize: '24px',
+  height: '48px',
+  lineHeight: '48px',
 })
