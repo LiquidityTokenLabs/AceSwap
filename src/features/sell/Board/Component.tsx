@@ -5,7 +5,7 @@ import { Nft } from '../../../domains/Nft'
 import { SellButton } from '../SellButton'
 
 import { ethers } from 'ethers'
-import POOL_ABI from '../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
+import POOL_ABI from '../../../../artifacts/contracts/AceSwap.sol/AceSwap.json'
 import { CONTRACT_ADDRESS, POOL_ADDRESS } from '../../../utils/Config'
 import TOKEN_721_ABI from '../../../../artifacts/contracts/SampleNFT.sol/SampleNFT.json'
 import { Color } from '../../../utils/Color'

@@ -14,7 +14,7 @@ import {
   POOL_ADDRESS,
 } from '../../../../utils/Config'
 
-import POOL_ABI from '../../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
+import POOL_ABI from '../../../../../artifacts/contracts/AceSwap.sol/AceSwap.json'
 import { Props as ToastProps } from '../../../../components/atoms/Toast/Toast'
 
 type Props = {
@@ -49,11 +49,7 @@ export const Component: FC<Props> = ({ title, items, chainId, setToast }) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const accounts = await provider.send('eth_requestAccounts', [])
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(
-      poolAddress,
-      POOL_ABI.abi,
-      signer
-    )
+    const contract = new ethers.Contract(poolAddress, POOL_ABI.abi, signer)
 
     const filter = contract.filters.StakeNFT()
 

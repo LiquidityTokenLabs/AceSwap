@@ -184,7 +184,9 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
   return (
     <SHeader>
       <LeftNav>
+
         <Name>AceSwap</Name>
+
       </LeftNav>
       <Nav>
         <ModeSelector

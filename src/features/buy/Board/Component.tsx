@@ -7,7 +7,7 @@ import { Nft } from '../../../domains/Nft'
 import { Color } from '../../../utils/Color'
 import { BuyButton } from '../BuyButton'
 
-import POOL_ABI from '../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
+import POOL_ABI from '../../../../artifacts/contracts/AceSwap.sol/AceSwap.json'
 import { ethers } from 'ethers'
 import {
   getNetworkConfByChainId,
