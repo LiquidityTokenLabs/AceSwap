@@ -106,11 +106,7 @@ export const Component: FC<Props> = ({
     if (!user) return
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(
-      poolAddress,
-      POOL_ABI.abi,
-      signer
-    )
+    const contract = new ethers.Contract(poolAddress, POOL_ABI.abi, signer)
     const accounts = await provider.send('eth_requestAccounts', [])
 
     const ubn = await contract.getUserInitBuyNum(user.get('ethAddress'))
@@ -131,11 +127,7 @@ export const Component: FC<Props> = ({
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const accounts = await provider.send('eth_requestAccounts', [])
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(
-      poolAddress,
-      POOL_ABI.abi,
-      signer
-    )
+    const contract = new ethers.Contract(poolAddress, POOL_ABI.abi, signer)
 
     const filter = contract.filters.StakeNFT()
 
@@ -172,11 +164,7 @@ export const Component: FC<Props> = ({
     if (!user) return
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(
-      poolAddress,
-      POOL_ABI.abi,
-      signer
-    )
+    const contract = new ethers.Contract(poolAddress, POOL_ABI.abi, signer)
 
     const filter = contract.filters.RemoveLP()
 
@@ -189,8 +177,6 @@ export const Component: FC<Props> = ({
       }
       setToast(newToast)
     })
-
-    const accounts = await provider.send('eth_requestAccounts', [])
 
     const swapTokenIdList = nfts
       .filter((nft) => nft.isActive)
@@ -219,11 +205,7 @@ export const Component: FC<Props> = ({
 
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(
-      poolAddress,
-      POOL_ABI.abi,
-      signer
-    )
+    const contract = new ethers.Contract(poolAddress, POOL_ABI.abi, signer)
 
     const selectedCount = nfts.filter((nft) => nft.isActive).length
     const userBuyNum = await contract.getUserInitBuyNum(user.get('ethAddress'))
@@ -250,7 +232,7 @@ export const Component: FC<Props> = ({
         <Button
           label="Increase liquidity"
           margin="20px 32px"
-          color={Color.pink}
+          color={Color.blue}
           fontColor={Color.pure_white}
           fontSize="20px"
           onClick={done}
@@ -265,7 +247,7 @@ export const Component: FC<Props> = ({
         <Button
           label="Unlock liquidity"
           margin="20px 32px"
-          color={Color.pink}
+          color={Color.blue}
           fontColor={Color.pure_white}
           fontSize="20px"
           disabled={!enabled}

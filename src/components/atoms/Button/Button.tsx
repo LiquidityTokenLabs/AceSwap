@@ -36,6 +36,8 @@ export const Button: FC<Props> = ({
     )
   }
 
+  console.log({ color })
+
   return (
     <Btn color={color} onClick={onClick} isFloat={isFloat}>
       <Label margin={margin} fontColor={fontColor} fontSize={fontSize}>

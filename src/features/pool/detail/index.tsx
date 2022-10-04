@@ -6,7 +6,6 @@ import { useQuery } from '@apollo/client'
 import GET_TRANSFERS from '../../../graphql/subgraph'
 import POOL_ABI from '../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
 import { ethers } from 'ethers'
-import { Network, Alchemy } from 'alchemy-sdk'
 import { round } from '../../../utils/Format'
 import {
   AMEDAMA_IMG,
@@ -79,11 +78,7 @@ export const DetailBoard: FC<Props> = ({ pool, setToast }) => {
     if (!user) return
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(
-      POOL_ADDRESS,
-      POOL_ABI.abi,
-      signer
-    )
+    const contract = new ethers.Contract(POOL_ADDRESS, POOL_ABI.abi, signer)
 
     const addr = user.get('ethAddress')
 
@@ -121,11 +116,7 @@ export const DetailBoard: FC<Props> = ({ pool, setToast }) => {
     if (!user) return
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(
-      POOL_ADDRESS,
-      POOL_ABI.abi,
-      signer
-    )
+    const contract = new ethers.Contract(POOL_ADDRESS, POOL_ABI.abi, signer)
 
     const tmpSpotPrice = await contract.spotPrice()
     const sp = Number(ethers.utils.formatEther(tmpSpotPrice.toString()))
@@ -166,16 +157,13 @@ export const DetailBoard: FC<Props> = ({ pool, setToast }) => {
   const fetchPoolInfo = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(
-      poolAddress,
-      POOL_ABI.abi,
-      signer
-    )
+    const contract = new ethers.Contract(poolAddress, POOL_ABI.abi, signer)
     const tmpSpotPrice = await contract.spotPrice()
     const tmpBuyNum = await contract.buyNum()
     const tmpSellNum = await contract.sellNum()
     const tmpUserFee = await contract.getUserFee(user?.get('ethAddress'))
     const tmpDelta = await contract.delta()
+
     setSpotPrice(Number(ethers.utils.formatEther(tmpSpotPrice.toString())))
     setBuyNum(tmpBuyNum)
     setSellNum(tmpSellNum)
