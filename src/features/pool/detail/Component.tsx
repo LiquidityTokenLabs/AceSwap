@@ -235,6 +235,7 @@ export const Component: FC<Props> = ({
           color={Color.blue}
           fontColor={Color.pure_white}
           fontSize="20px"
+          isRound={false}
           onClick={done}
         />
       )
@@ -251,6 +252,7 @@ export const Component: FC<Props> = ({
           fontColor={Color.pure_white}
           fontSize="20px"
           disabled={!enabled}
+          isRound={false}
           onClick={done}
         />
       )

@@ -16,13 +16,13 @@ const Root = styled('div')((p: { isActive: boolean }) => ({
   cursor: 'pointer',
   width: '120px',
   height: '150px',
-  border: `2px solid ${p.isActive ? Color.pink : Color.base_white}`,
+  border: `2px solid ${p.isActive ? Color.blue : Color.base_white}`,
   borderRadius: '16px',
   boxSizing: 'border-box',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   ':hover': {
-    border: `2px solid ${p.isActive ? Color.pink : Color.gray}`,
+    border: `2px solid ${p.isActive ? Color.blue : Color.gray}`,
   },
 }))

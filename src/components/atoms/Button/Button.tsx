@@ -7,10 +7,12 @@ type Props = {
   margin: string
   color: string
   fontColor?: string
+  bgColor?: string
   fontSize?: string
   disabled?: boolean
   onClick: () => void
   isFloat?: boolean
+  isRound?: boolean
 }
 
 export const Button: FC<Props> = ({
@@ -18,10 +20,12 @@ export const Button: FC<Props> = ({
   margin,
   color,
   fontColor = Color.text_black,
+  bgColor = color,
   fontSize = '16px',
   disabled = false,
   onClick,
   isFloat = true,
+  isRound = true,
 }) => {
   if (disabled) {
     return (
@@ -36,10 +40,13 @@ export const Button: FC<Props> = ({
     )
   }
 
-  console.log({ color })
-
   return (
-    <Btn color={color} onClick={onClick} isFloat={isFloat}>
+    <Btn
+      color={color}
+      bgColor={bgColor}
+      onClick={onClick}
+      isFloat={isFloat}
+      isRound={isRound}>
       <Label margin={margin} fontColor={fontColor} fontSize={fontSize}>
         {label}
       </Label>
@@ -53,17 +60,24 @@ const getBorderColor = (color: string) => {
   return result
 }
 
-const Btn = styled('button')((p: { color: string; isFloat: boolean }) => ({
-  background: p.isFloat ? p.color : Color.blue,
-  borderRadius: '16px',
-  boxSizing: 'border-box',
-  border: `1px solid ${Color.blue}`,
-  cursor: 'pointer',
-  padding: '0',
-  boxShadow: p.isFloat
-    ? 'rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px'
-    : 'none',
-}))
+const Btn = styled('button')(
+  (p: {
+    color: string
+    bgColor: string
+    isFloat: boolean
+    isRound: boolean
+  }) => ({
+    background: p.bgColor,
+    borderRadius: p.isRound ? '100px' : '16px',
+    boxSizing: 'border-box',
+    border: `1px solid ${Color.blue}`,
+    cursor: 'pointer',
+    padding: '0',
+    boxShadow: p.isFloat
+      ? 'rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px'
+      : 'none',
+  })
+)
 
 const DisableButton = styled('div')({
   display: 'flex',

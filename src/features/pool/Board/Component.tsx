@@ -25,7 +25,7 @@ export const Component: FC<Props> = ({ pools, setToast }) => {
     <Root>
       <Card padding="26px">
         <Header>
-          <Title>{`$Pool(${pools.length})`}</Title>
+          <Title>{`Pool(${pools.length})`}</Title>
         </Header>
         <PoolsWrapper>
           {pools.map((pool) => {

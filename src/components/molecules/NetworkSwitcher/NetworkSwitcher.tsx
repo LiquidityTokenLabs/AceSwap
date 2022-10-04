@@ -12,7 +12,6 @@ type Props = {
 }
 
 export const NetworkSwitcher: FC<Props> = ({ chainName, changeAstar }) => {
-  console.log({ chainName })
   if (chainName === 'ERR') {
     return (
       <SwitchNetwork onClick={changeAstar}>
@@ -39,7 +38,7 @@ const SwitchNetwork = styled('div')({
   alignItems: 'center',
   height: '50px',
   padding: '8px',
-  borderRadius: '16px',
+  borderRadius: '100px',
 })
 
 const Astar = styled('div')({
@@ -47,7 +46,7 @@ const Astar = styled('div')({
   color: Color.blue,
   border: `1px solid ${Color.blue}`,
   padding: '8px',
-  borderRadius: '16px',
+  borderRadius: '100px',
   display: 'flex',
   alignItems: 'center',
   height: '50px',
