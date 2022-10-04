@@ -10,7 +10,7 @@ describe('結合テスト', function () {
     ;[owner, staker, swaper, swaper2] = await ethers.getSigners()
     SampleNFT = await ethers.getContractFactory('SampleNFT')
     sampleNFT = await SampleNFT.deploy('SampleNFT', 'SN')
-    YomiPool = await ethers.getContractFactory('YomiSwap')
+    YomiPool = await ethers.getContractFactory('AceSwap.sol')
     yomiPool = await YomiPool.deploy(
       initSpotPrice,
       initDelta,

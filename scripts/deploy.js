@@ -5,9 +5,9 @@ let initDelta = ethers.utils.parseEther('0.001')
 
 async function main() {
   const SampleToken = await hre.ethers.getContractFactory('SampleNFT')
-  const YomiSwap = await hre.ethers.getContractFactory('YomiPool')
+  const AceSwap.sol = await hre.ethers.getContractFactory('YomiPool')
   const sampletoken = await SampleToken.deploy('SampleToken', 'ST')
-  const yomiswap = await YomiSwap.deploy(
+  const yomiswap = await AceSwap.sol.deploy(
     initSpotPrice,
     initDelta,
     sampletoken.address,

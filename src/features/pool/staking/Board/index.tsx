@@ -11,7 +11,7 @@ import {
   AMEDAMA_IMG,
   CONTRACT_ADDRESS,
 } from '../../../../utils/Config'
-import POOL_ABI from '../../../../../artifacts/contracts/YomiSwap.sol/YomiSwap.json'
+import POOL_ABI from '../../../../../artifacts/contracts/AceSwap.sol/AceSwap.json'
 
 type Props = {
   setToast: Dispatch<ToastProps>
@@ -38,11 +38,7 @@ export const AutoStakingBoard: FC<Props> = ({ setToast }) => {
     if (!user) return
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(
-      POOL_ADDRESS,
-      POOL_ABI.abi,
-      signer
-    )
+    const contract = new ethers.Contract(POOL_ADDRESS, POOL_ABI.abi, signer)
 
     const addr = user.get('ethAddress')
     const contractAddress = CONTRACT_ADDRESS

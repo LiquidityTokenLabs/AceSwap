@@ -29,7 +29,7 @@ contract SampleNFT is ERC721Enumerable, Ownable {
             '{',
             '"name": "Astar Candy #', _tokenId.toString(),
             '",',
-            '"description": "This NFT is a limited edition NFT issued through a collaboration between Astar Network, CryptoBar P2P and YomiSwap.",',
+            '"description": "This NFT is a limited edition NFT issued through a collaboration between Astar Network, CryptoBar P2P and AceSwap.sol.",',
             '"image":', baseURI,
             '}'
         );

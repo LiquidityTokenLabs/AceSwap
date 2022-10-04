@@ -52,13 +52,13 @@
   "main": "next.config.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Kazuma7/YomiSwap.git"
+    "url": "git+https://github.com/Kazuma7/AceSwap.sol.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Kazuma7/YomiSwap/issues"
+    "url": "https://github.com/Kazuma7/AceSwap.sol/issues"
   },
-  "homepage": "https://github.com/Kazuma7/YomiSwap#readme"
+  "homepage": "https://github.com/Kazuma7/AceSwap.sol#readme"
 }
