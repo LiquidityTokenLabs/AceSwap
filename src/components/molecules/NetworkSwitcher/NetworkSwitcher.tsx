@@ -24,7 +24,7 @@ export const NetworkSwitcher: FC<Props> = ({ chainName, changeAstar }) => {
 
   return (
     <Astar>
-      <Image src="/icons/astar.jpeg" alt="astar" width={20} height={20} />
+      <Image src="/icons/astar.png" alt="astar" width={20} height={20} />
       <Text>Astar</Text>
     </Astar>
   )

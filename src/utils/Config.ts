@@ -21,7 +21,7 @@ export const NETWORKS = [
     src: '/icons/ethereum.png',
   },
   { id: 420, name: 'optimism goerli', src: '/icons/optimism.png' },
-  { id: 592, name: 'Astar', src: '/icons/astar.jpeg' },
+  { id: 592, name: 'Astar', src: '/icons/astar.png' },
 ]
 
 export const getNetworkInfoByChainId = (id: number) => {
@@ -39,7 +39,7 @@ export const getNetworkInfoByChainId = (id: number) => {
 export const getNetworkConfByChainId = (id: number) => {
   return {
     chainName: 'Astar',
-    src: '/icons/astar.jpeg',
+    src: '/icons/astar.png',
     poolAddress: POOL_ADDRESS,
     contractAddress: CONTRACT_ADDRESS,
   }

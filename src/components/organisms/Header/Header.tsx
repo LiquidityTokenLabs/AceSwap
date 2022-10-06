@@ -103,7 +103,7 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
 
     if (tmpChainId === ASTAR_ID) {
       setChainName('Astar')
-      setChainSrc('/icons/astar.jpeg')
+      setChainSrc('/icons/astar.png')
       setChainId(tmpChainId)
     } else {
       setChainName('ERR')
