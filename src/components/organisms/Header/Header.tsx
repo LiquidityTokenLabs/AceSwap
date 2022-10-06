@@ -22,10 +22,8 @@ import {
   getNetworkConfByChainId,
   getNetworkInfoByChainId,
   CONTRACT_ADDRESS,
-  NETWORKS,
   ASTAR_ID,
 } from '../../../utils/Config'
-import Image from 'next/image'
 import { converDec2Hex } from '../../../utils/Format'
 import { NetworkSwitcher } from '../../molecules/NetworkSwitcher/NetworkSwitcher'
 
