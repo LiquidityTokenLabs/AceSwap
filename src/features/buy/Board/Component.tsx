@@ -42,8 +42,6 @@ export const Component: FC<Props> = ({
   const [anchorAmount, setAnchorAmount] = useState(0)
   const [totalFee, setTotalFee] = useState(0)
 
-  const [toastProps, setToastProps] = useState<ToastProps>({} as ToastProps)
-
   const chainLogo = getNetworkConfByChainId(chainId)?.src
 
   const poolAddress = POOL_ADDRESS
@@ -89,7 +87,7 @@ export const Component: FC<Props> = ({
         toastState: 'Success',
         time: new Date().getTime().toString(),
       }
-      setToastProps(newToast)
+      setToast(newToast)
     })
 
     contract.swapFTforNFT(swapTokeIdList, {
@@ -171,7 +169,6 @@ export const Component: FC<Props> = ({
           </BottomWrapper>
         </Container>
       </Card>
-      <Toast {...toastProps} />
     </Root>
   )
 }
