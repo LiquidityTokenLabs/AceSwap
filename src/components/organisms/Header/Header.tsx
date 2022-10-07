@@ -3,14 +3,7 @@ import { Dispatch, FC, useEffect, useState } from 'react'
 import { ModeSelector } from '../../molecules/ModeSelector/ModeSelector'
 import { Button } from '../../atoms/Button/Button'
 import { Color } from '../../../utils/Color'
-import { DropDown } from '../../atoms/DropDown/DropDown'
-import {
-  FaBook,
-  FaEllipsisH,
-  FaGithub,
-  FaTwitter,
-  FaUserAlt,
-} from 'react-icons/fa'
+import { FaEllipsisH, FaTwitter, FaUserAlt } from 'react-icons/fa'
 import { BsBox } from 'react-icons/bs'
 import { MdLogout, MdTranslate } from 'react-icons/md'
 import Router, { useRouter } from 'next/router'
@@ -32,7 +25,7 @@ type Props = {
 }
 
 export const Header: FC<Props> = ({ setNetworkId }) => {
-  const [activeNum, setActiveNum] = useState(0)
+  const [activeNum, setActiveNum] = useState(-Infinity)
   const [address, setAddress] = useState('')
   const router = useRouter()
   const showInfo = address.substring(0, 6) + '...' + address.slice(-4)
@@ -52,17 +45,17 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
         console.log('to account page')
       },
     },
-    {
-      label: 'Twitter',
-      available: true,
-      type: 'LINK',
-      linkInfo: {
-        href: 'https://twitter.com/YomiSwap',
-        locale: router.locale || '',
-        isOutside: true,
-      },
-      icon: <FaTwitter />,
-    },
+    // {
+    //   label: 'Twitter',
+    //   available: true,
+    //   type: 'LINK',
+    //   linkInfo: {
+    //     href: 'https://twitter.com/YomiSwap',
+    //     locale: router.locale || '',
+    //     isOutside: true,
+    //   },
+    //   icon: <FaTwitter />,
+    // },
     {
       label: 'Mint',
       available: true,
@@ -156,9 +149,23 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
   }, [address])
 
   useEffect(() => {
-    if (activeNum === 0) Router.push('/buy')
-    if (activeNum === 1) Router.push('/sell')
-    if (activeNum === 2) Router.push('/pool')
+    if (router.pathname.startsWith('/buy')) {
+      setActiveNum(0)
+    }
+    if (router.pathname.startsWith('/sell')) {
+      setActiveNum(1)
+    }
+    if (router.pathname.startsWith('/pool')) {
+      setActiveNum(2)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (activeNum === 0) router.push('/buy')
+    if (activeNum === 1) router.push('/sell')
+    if (activeNum === 2) router.push('/pool')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeNum])
 
   useEffect(() => {

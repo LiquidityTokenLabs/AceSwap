@@ -64,7 +64,11 @@ export const SellBoard: FC<Props> = ({ setToast }) => {
     console.log({ sn })
     setSellNum(sn)
 
-    const ids = await nftContract.getAllHeldIds(addr)
+    const resultIds = await nftContract.getAllHeldIds(addr)
+
+    const ids = [...resultIds].sort(
+      (a: any, b: any) => Number(a.toString()) - Number(b.toString())
+    )
     console.log({ ids })
 
     const res: Nft[] = []

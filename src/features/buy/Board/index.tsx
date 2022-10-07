@@ -60,18 +60,17 @@ export const BuyBoard: FC<Props> = ({ networkId, setToast }) => {
     const bn = await contract.buyNum()
     const buyNum = Number(bn.toString())
 
-    const addr = user.get('ethAddress')
-
     const nftContract = new ethers.Contract(
       contractAddress,
       TOKEN_721_ABI,
       signer
     )
 
-    console.log({ addr })
+    const resultIds = await nftContract.getAllHeldIds(poolAddress)
 
-    const ids = await nftContract.getAllHeldIds(poolAddress)
-    console.log({ ids })
+    const ids = [...resultIds].sort(
+      (a: any, b: any) => Number(a.toString()) - Number(b.toString())
+    )
 
     const res: Nft[] = []
     for (let i = 0; i < ids.length; i++) {
@@ -85,6 +84,7 @@ export const BuyBoard: FC<Props> = ({ networkId, setToast }) => {
       }
       res.push(nft)
     }
+
     setNfts(res)
   }
 
