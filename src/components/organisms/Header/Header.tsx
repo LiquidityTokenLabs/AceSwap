@@ -57,7 +57,7 @@ export const Header: FC<Props> = ({ setNetworkId }) => {
       available: true,
       type: 'LINK',
       linkInfo: {
-        href: 'https://twitter.com/YomiSwap',
+        href: 'https://twitter.com/_AceSwap',
         locale: router.locale || '',
         isOutside: true,
       },
