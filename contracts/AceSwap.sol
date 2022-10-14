@@ -1,15 +1,13 @@
 // SPDX-License-Identifier: None
 pragma solidity =0.8.16;
-import 'hardhat/console.sol';
+import "hardhat/console.sol";
 
-import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
-import '@openzeppelin/contracts/utils/Counters.sol';
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract AceSwap {
   using Counters for Counters.Counter;
   Counters.Counter private totalStake;
-
-  // test
 
   //STORAGE
   //@param protocolFeeRatio: to calculate fee
@@ -27,7 +25,7 @@ contract AceSwap {
   //@param protocolAddress: Protocol address from which fees can be withdrawn
   address public protocolAddress;
 
-  //@param createAddress: Pool creator's address
+  //@param createAddress: Pool creator"s address
   address public createrAddress;
 
   //@param totalLPoint: total Point of LP
@@ -112,7 +110,7 @@ contract AceSwap {
       for (uint256 i = 0; i < _tmpNum; i++) {
         require(
           IERC721(collectionAddress).ownerOf(tokenIds[i]) == msg.sender,
-          'you are not owner'
+          "you are not owner"
         );
       }
     }
@@ -133,7 +131,7 @@ contract AceSwap {
           msg.sender,
           address(this),
           tokenIds[i],
-          ''
+          ""
         );
       }
     }
@@ -152,9 +150,9 @@ contract AceSwap {
     );
 
     //check
-    require(_tmpNum > 0, 'Must ask for > 0 NFTs');
-    require(_tmpNum <= buyNum, 'buy position not enough liquidity');
-    require(msg.value >= _totalFee, 'not enough value');
+    require(_tmpNum > 0, "Must ask for > 0 NFTs");
+    require(_tmpNum <= buyNum, "buy position not enough liquidity");
+    require(msg.value >= _totalFee, "not enough value");
     unchecked {
       for (uint256 i = 0; i < _tmpNum; i++) {
         require(
@@ -179,7 +177,7 @@ contract AceSwap {
           address(this),
           msg.sender,
           tokenIds[i],
-          ''
+          ""
         );
       }
     }
@@ -208,10 +206,10 @@ contract AceSwap {
     }
     require(
       _totalFee >= minExpectFee,
-      'The amount you get is lower than expected.'
+      "The amount you get is lower than expected."
     );
-    require(address(this).balance >= _totalFee, 'this contract is not enough');
-    require(_tmpNum <= sellNum, 'sell position not enough liquidity');
+    require(address(this).balance >= _totalFee, "this contract is not enough");
+    require(_tmpNum <= sellNum, "sell position not enough liquidity");
 
     //effect
     sellEventNum += _tmpNum;
@@ -235,7 +233,7 @@ contract AceSwap {
           msg.sender,
           address(this),
           tokenIds[i],
-          ''
+          ""
         );
       }
     }
@@ -246,7 +244,7 @@ contract AceSwap {
     emit SwapNFTforFT(msg.sender, tokenIds, _totalFee, eventId);
   }
 
-  //@notice withdraw nft and fee (when pool have user's initial buy num)
+  //@notice withdraw nft and fee (when pool have user"s initial buy num)
   function withdrawNFTAndFee(uint256[] memory tokenIds) public payable {
     uint256 _tmpNum = tokenIds.length;
     uint256 _userFee = _calcRemoveLP(_tmpNum, msg.sender);
@@ -259,8 +257,8 @@ contract AceSwap {
         );
       }
     }
-    require(userInitBuyNum[msg.sender] == _tmpNum, 'Your NFT is remain yet');
-    require(buyNum >= _tmpNum, 'Pool not enough NFT');
+    require(userInitBuyNum[msg.sender] == _tmpNum, "Your NFT is remain yet");
+    require(buyNum >= _tmpNum, "Pool not enough NFT");
 
     //effect
     buyNum -= userInitBuyNum[msg.sender];
@@ -276,7 +274,7 @@ contract AceSwap {
           address(this),
           msg.sender,
           tokenIds[i],
-          ''
+          ""
         );
       }
     }
@@ -290,7 +288,7 @@ contract AceSwap {
     emit RemoveLP(msg.sender, tokenIds, userLPoint[msg.sender], eventId);
   }
 
-  //@notice withdraw nft and fee (when pool don't have user's initial buy num)
+  //@notice withdraw nft and fee (when pool don"t have user"s initial buy num)
   function withdrawNFTAndFTAndFee(uint256[] memory tokenIds) public payable {
     uint256 _tmpNum = tokenIds.length;
     uint256 _userFee = _calcRemoveLP(userInitBuyNum[msg.sender], msg.sender);
@@ -303,8 +301,8 @@ contract AceSwap {
         );
       }
     }
-    require(userInitBuyNum[msg.sender] > buyNum, 'Pool NFT is remain yet');
-    require(buyNum == tokenIds.length, 'You would forgot NFT');
+    require(userInitBuyNum[msg.sender] > buyNum, "Pool NFT is remain yet");
+    require(buyNum == tokenIds.length, "You would forgot NFT");
 
     //effect
     buyNum -= tokenIds.length;
@@ -323,7 +321,7 @@ contract AceSwap {
           address(this),
           msg.sender,
           tokenIds[i],
-          ''
+          ""
         );
       }
     }
