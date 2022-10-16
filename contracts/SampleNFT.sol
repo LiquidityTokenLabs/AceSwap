@@ -56,7 +56,7 @@ contract SampleNFT is ERC721Enumerable, Ownable {
     }
   }
 
-  function mint() public onlyOwner {
+  function mint() public {
     _tokenIdTracker.increment();
     uint256 tokenId = _tokenIdTracker.current();
     _mint(msg.sender, tokenId);
