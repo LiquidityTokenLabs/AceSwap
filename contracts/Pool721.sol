@@ -55,6 +55,7 @@ contract Pool721 {
     uint256 userInitBuyNum;
     uint256 userInitSellNum;
     uint256 userInitSellAmount;
+    // totalNFTpointに対するユーザーの持ち分の価値
     uint256 userNFTpoint;
     uint256 userFTpoint;
   }
@@ -206,7 +207,7 @@ contract Pool721 {
     returns (uint256 _protocolFee)
   {
     // _user：NFTをFTへ交換したいユーザー
-    // ？　routerはどのアドレスか
+    // ？　routerはどのアドレスか　→　本人かルーターか
     require(_user == msg.sender || msg.sender == router);
     // 交換したいNFTの数
     uint256 _itemNum = _tokenIds.length;
@@ -279,6 +280,7 @@ contract Pool721 {
     //check
     require(_itemNum <= poolInfo.sellNum, "Not enough liquidity");
     // ？　minExpectFeeとは
+    // NFTを売る側の利益を保証　その金額より低い場合は取引なし
     require(_totalFee >= _minExpectFee, "Not expected value");
     require(address(this).balance >= _totalFee, "Not enough contract balance");
 
@@ -499,6 +501,7 @@ contract Pool721 {
 
   //CALCULATION
   //@notice calc NFT point
+  // ユーザーのNFTの価値
   function _calcNFTpoint(uint256 _totalFee)
     internal
     view
@@ -521,6 +524,7 @@ contract Pool721 {
   }
 
   //@notice calc fee from NFT point
+  // 流動性報酬計算
   function _calcNFTfee(address _user) internal view returns (uint256 _userFee) {
     uint256 _tmpLP = ((totalNFTpoint + totalNFTfee) *
       userInfo[_user].userNFTpoint) / totalNFTpoint;
@@ -545,6 +549,7 @@ contract Pool721 {
   //@notice calc profit
   function _calcProfit() internal returns (uint256 protocolFee) {
     if (buyEventNum > 0 && sellEventNum > 0) {
+      // 買枠＞売枠のときにプロトコルに利益
       if (buyEventNum >= sellEventNum) {
         (CurveErrorCodes.Error calcProfitError, uint256 tmpFee) = ICurve(
           poolInfo.bondingCurve
@@ -557,6 +562,7 @@ contract Pool721 {
         require(calcProfitError == CurveErrorCodes.Error.OK, "Bonding error");
 
         protocolFee = tmpFee.fmul(protocolFeeRatio, FixedPointMathLib.WAD);
+        // ユーザーの分配量
         _calcDisFee(tmpFee - protocolFee);
         buyEventNum -= sellEventNum;
         sellEventNum = 0;
@@ -585,6 +591,7 @@ contract Pool721 {
     } else if (totalNFTpoint == 0) {
       totalFTfee += tmpTotalFee;
     } else {
+      // FTのステーキングしている人がいたら（1人でも）、NFT/FTが半分ずつ
       totalFTfee += tmpTotalFee / 2;
       totalNFTfee += tmpTotalFee - tmpTotalFee / 2;
     }
