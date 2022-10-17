@@ -129,6 +129,45 @@ contract Pool721 {
     _;
   }
 
+  //@notice Staking of FT
+  function stakeFT(uint256 _itemNum, address _user)
+    public
+    payable
+    onlyOwnerOrRouter(_user)
+  {
+    require(_itemNum > 0, "Not 0");
+
+    //update stakeFTprice
+    (
+      CurveErrorCodes.Error error,
+      uint128 _newstakeFTprice,
+      uint128 _newDelta,
+      ,
+      uint256 _totalFee
+    ) = ICurve(poolInfo.bondingCurve).getSellInfo(
+        stakeFTprice,
+        poolInfo.delta,
+        poolInfo.divergence,
+        _itemNum
+      );
+    require(error == CurveErrorCodes.Error.OK, "Bonding error");
+
+    //check
+    require(msg.value >= _totalFee, "Insufficient Value");
+
+    //effect
+    uint256 _tmpFTpoint = _calcFTpoint(_totalFee);
+    userInfo[_user].userFTpoint += _tmpFTpoint;
+    totalFTpoint += _tmpFTpoint;
+    userInfo[_user].userInitSellNum += _itemNum;
+    userInfo[_user].userInitSellAmount += _totalFee;
+    poolInfo.sellNum += _itemNum;
+    _updateStakeInfo(1, _newstakeFTprice, _newDelta);
+
+    //event
+    emit StakeFT(_user, _itemNum, _totalFee);
+  }
+
   //@notice Staking of NFT
   function stakeNFT(uint256[] memory _tokenIds, address _user)
     public
@@ -480,6 +519,15 @@ contract Pool721 {
       _LP = _totalFee;
     } else {
       _LP = (totalNFTpoint * _totalFee) / (totalNFTpoint + totalNFTfee);
+    }
+  }
+
+  //@notice calc FT point
+  function _calcFTpoint(uint256 _totalFee) internal view returns (uint256 _LP) {
+    if (totalFTpoint == 0) {
+      _LP = _totalFee;
+    } else {
+      _LP = (totalFTpoint * _totalFee) / (totalFTpoint + totalFTfee);
     }
   }
 

@@ -65,6 +65,8 @@ interface IPool721 {
   //MAIN
   function stakeNFT(uint256[] calldata tokenIds, address user) external;
 
+  function stakeFT(uint256 itemNum, address user) external payable;
+
   function swapNFTforFT(
     uint256[] calldata tokenIds,
     uint256 minExpectFee,
