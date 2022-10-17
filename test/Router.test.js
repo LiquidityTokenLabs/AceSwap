@@ -22,7 +22,7 @@ describe("結合テスト", function () {
     SampleNFT = await ethers.getContractFactory("SampleNFT")
     sampleNFT = await SampleNFT.deploy("SampleNFT", "SN", "")
     sampleNFT2 = await SampleNFT.deploy("SampleNFT", "SN", "")
-    BondingCurve = await ethers.getContractFactory("LinerCurve")
+    BondingCurve = await ethers.getContractFactory("LinearCurve")
     bondingCurve = await BondingCurve.deploy()
     bondingCurve2 = await BondingCurve.deploy()
     Router = await ethers.getContractFactory("Router")

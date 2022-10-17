@@ -4,7 +4,7 @@ import "./CurveErrorCode.sol";
 import "../lib/FixedPointMathLib.sol";
 import "hardhat/console.sol";
 
-contract LinerCurve is CurveErrorCodes {
+contract LinearCurve is CurveErrorCodes {
   using FixedPointMathLib for uint256;
 
   function getBuyInfo(
