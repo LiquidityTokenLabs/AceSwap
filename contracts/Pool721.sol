@@ -123,9 +123,18 @@ contract Pool721 {
     _;
   }
 
-  //@notice Staking of FT
-  function stakeFT(uint256 _itemNum, address _user) public payable {
+  // NFTをFTへ交換したいユーザーが実行したものか、Router.solが呼び出したものか
+  modifier onlyOwnerOrRouter(address _user) {
     require(_user == msg.sender || msg.sender == router);
+    _;
+  }
+
+  //@notice Staking of FT
+  function stakeFT(uint256 _itemNum, address _user)
+    public
+    payable
+    onlyOwnerOrRouter(_user)
+  {
     require(_itemNum > 0, "Not 0");
 
     //update stakeFTprice
@@ -160,8 +169,10 @@ contract Pool721 {
   }
 
   //@notice Staking of NFT
-  function stakeNFT(uint256[] memory _tokenIds, address _user) public {
-    require(_user == msg.sender || msg.sender == router);
+  function stakeNFT(uint256[] memory _tokenIds, address _user)
+    public
+    onlyOwnerOrRouter(_user)
+  {
     uint256 _itemNum = _tokenIds.length;
     require(_itemNum > 0, "Not 0");
 
@@ -204,11 +215,9 @@ contract Pool721 {
   function swapFTforNFT(uint256[] memory _tokenIds, address _user)
     public
     payable
+    onlyOwnerOrRouter(_user)
     returns (uint256 _protocolFee)
   {
-    // _user：NFTをFTへ交換したいユーザー
-    // ？　routerはどのアドレスか　→　本人かルーターか
-    require(_user == msg.sender || msg.sender == router);
     // 交換したいNFTの数
     uint256 _itemNum = _tokenIds.length;
     require(_itemNum > 0, "Not 0");
@@ -257,8 +266,7 @@ contract Pool721 {
     uint256[] memory _tokenIds,
     uint256 _minExpectFee,
     address _user
-  ) public payable returns (uint256 _protocolFee) {
-    require(_user == msg.sender || msg.sender == router);
+  ) public payable onlyOwnerOrRouter(_user) returns (uint256 _protocolFee) {
     uint256 _itemNum = _tokenIds.length;
     require(_itemNum > 0, "Not 0");
 
