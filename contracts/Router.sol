@@ -51,12 +51,6 @@ contract Router is Ownable {
     uint256 userNum,
     uint256[] tokenIds
   );
-  event StakeFT(
-    address indexed user,
-    address indexed pool,
-    uint256 userNum,
-    uint256 userAmount
-  );
   event SwapNFTforFT(
     address indexed user,
     address indexed pool,
@@ -94,21 +88,6 @@ contract Router is Ownable {
     userStakePoolList[msg.sender].push(_pool);
     IPool721(_pool).stakeNFT(_tokenIds, msg.sender);
     emit StakeNFT(msg.sender, _pool, _tokenIds.length, _tokenIds);
-  }
-
-  //@notice stake of ft
-  function stakeFT(address _pool, uint256 _userSellNum) public payable {
-    IPool721.PoolInfo memory _poolInfo = IPool721(_pool).getPoolInfo();
-    uint128 _stakeFTprice = IPool721(_pool).stakeFTprice();
-    uint256 _totalFee = IPool721(_pool).getCalcSellInfo(
-      _userSellNum,
-      _stakeFTprice,
-      _poolInfo.divergence
-    );
-
-    userStakePoolList[msg.sender].push(_pool);
-    IPool721(_pool).stakeFT{value: msg.value}(_userSellNum, msg.sender);
-    emit StakeFT(msg.sender, _pool, _userSellNum, _totalFee);
   }
 
   //@notice swap NFT → FT

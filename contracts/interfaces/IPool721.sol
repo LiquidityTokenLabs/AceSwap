@@ -45,7 +45,6 @@ interface IPool721 {
 
   //EVENT
   event StakeNFT(address user, uint256[] tokenIds);
-  event StakeFT(address user, uint256 userSellNum, uint256 userSellAmount);
   event SwapNFTforFT(address user, uint256[] tokenIds, uint256 totalFee);
   event SwapFTforNFT(address user, uint256[] tokenIds);
   event WithdrawNFTandFee(address user, uint256[] tokenIds, uint256 userFee);
@@ -64,8 +63,6 @@ interface IPool721 {
 
   //MAIN
   function stakeNFT(uint256[] calldata tokenIds, address user) external;
-
-  function stakeFT(uint256 itemNum, address user) external payable;
 
   function swapNFTforFT(
     uint256[] calldata tokenIds,
