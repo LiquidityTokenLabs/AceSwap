@@ -55,7 +55,6 @@ contract Pool721 {
     uint256 userInitBuyNum;
     uint256 userInitSellNum;
     uint256 userInitSellAmount;
-    // totalNFTpointに対するユーザーの持ち分の価値
     uint256 userNFTpoint;
     uint256 userFTpoint;
   }
@@ -123,7 +122,6 @@ contract Pool721 {
     _;
   }
 
-  // NFTをFTへ交換したいユーザーが実行したものか、Router.solが呼び出したものか
   modifier onlyOwnerOrRouter(address _user) {
     require(_user == msg.sender || msg.sender == router);
     _;
@@ -154,18 +152,12 @@ contract Pool721 {
 
     //effect
     uint256 _LP = _calcNFTpoint(_totalFee);
-    // ユーザー対NFTのステーキングに対するLPポイントを更新
     userInfo[_user].userNFTpoint += _LP;
-    // 総NFTステーキングのLPポイント
     totalNFTpoint += _LP;
-    // ユーザーの初期NFT流動性枠
     userInfo[_user].userInitBuyNum += _itemNum;
-    // ？　初期NFT流動性枠との違い
     poolInfo.buyNum += _itemNum;
-    // 価格・手数料を更新
     _updateStakeInfo(2, _newstakeNFTprice, _newDelta);
 
-    // NFTをコントラクトへステーキングする関数　User→Pool
     //intaraction
     _sendNFTs(_tokenIds, _itemNum, _user, address(this));
 
@@ -179,7 +171,6 @@ contract Pool721 {
     onlyOwnerOrRouter(_user)
     returns (uint256 _protocolFee)
   {
-    // 交換したいNFTの数
     uint256 _itemNum = _tokenIds.length;
     require(_itemNum > 0, "Not 0");
 
@@ -196,7 +187,6 @@ contract Pool721 {
         poolInfo.divergence,
         _itemNum
       );
-    // エラー処理
     require(error == CurveErrorCodes.Error.OK, "Bonding error");
 
     //check
@@ -204,13 +194,9 @@ contract Pool721 {
     require(msg.value >= _totalFee, "Not enough value");
 
     //effect
-    // NFTが購入された回数を更新
     buyEventNum += _itemNum;
-    // NFTの買枠更新
     poolInfo.buyNum -= _itemNum;
-    // NFTの売枠更新
     poolInfo.sellNum += _itemNum;
-    // ？　protocolFeeの計算方法
     _protocolFee = _calcProfit();
     _updatePoolInfo(_newSpotPrice, _newDelta, _newDivergence);
 
@@ -248,17 +234,12 @@ contract Pool721 {
 
     //check
     require(_itemNum <= poolInfo.sellNum, "Not enough liquidity");
-    // ？　minExpectFeeとは
-    // NFTを売る側の利益を保証　その金額より低い場合は取引なし
     require(_totalFee >= _minExpectFee, "Not expected value");
     require(address(this).balance >= _totalFee, "Not enough contract balance");
 
     //effect
-    // NFTが売却された回数
     sellEventNum += _itemNum;
-    // 売枠の更新
     poolInfo.sellNum -= _itemNum;
-    // 買枠の更新
     poolInfo.buyNum += _itemNum;
     _protocolFee = _calcProfit();
     _updatePoolInfo(_newSpotPrice, _newDelta, _newDivergence);
@@ -290,16 +271,10 @@ contract Pool721 {
     );
 
     //effect
-    // ？　ひとつのPoolに複数のユーザーがステーキングできる仕組みになっているのか
-    // pool内のNFTの買枠を更新
     poolInfo.buyNum -= _itemNum;
-    // Pool内のユーザーの初期NFT流動性枠をゼロに
     userInfo[_user].userInitBuyNum = 0;
-    // 総NFTステーキングポイントの更新（ユーザーAが引き出した分総数から引き算）
     totalNFTpoint -= userInfo[_user].userNFTpoint;
-    // Pool内のNFTのTotalFeeを更新（ユーザーAが引き出した分総数から引き算）
     totalNFTfee -= _userFee;
-    // ユーザーAのNFTのステーキングに対するLPポイントをゼロに
     userInfo[_user].userNFTpoint = 0;
 
     //down stakeNFTprice
@@ -365,7 +340,6 @@ contract Pool721 {
     _sendNFTs(_tokenIds, _itemNum, address(this), _user);
 
     if (_userFee > 0) {
-      // ？　userFeeはPoolにあるNFTの総価値ではないのか（ユーザーAはNFTを引き出そうとしているのに対して、FTが送金されるのはなぜ）
       payable(_user).transfer(_userFee);
     }
 
@@ -470,7 +444,6 @@ contract Pool721 {
 
   //CALCULATION
   //@notice calc NFT point
-  // ユーザーのNFTの価値
   function _calcNFTpoint(uint256 _totalFee)
     internal
     view
@@ -484,7 +457,6 @@ contract Pool721 {
   }
 
   //@notice calc fee from NFT point
-  // 流動性報酬計算
   function _calcNFTfee(address _user) internal view returns (uint256 _userFee) {
     uint256 _tmpLP = ((totalNFTpoint + totalNFTfee) *
       userInfo[_user].userNFTpoint) / totalNFTpoint;
@@ -509,7 +481,6 @@ contract Pool721 {
   //@notice calc profit
   function _calcProfit() internal returns (uint256 protocolFee) {
     if (buyEventNum > 0 && sellEventNum > 0) {
-      // 買枠＞売枠のときにプロトコルに利益
       if (buyEventNum >= sellEventNum) {
         (CurveErrorCodes.Error calcProfitError, uint256 tmpFee) = ICurve(
           poolInfo.bondingCurve
@@ -522,7 +493,6 @@ contract Pool721 {
         require(calcProfitError == CurveErrorCodes.Error.OK, "Bonding error");
 
         protocolFee = tmpFee.fmul(protocolFeeRatio, FixedPointMathLib.WAD);
-        // ユーザーの分配量
         _calcDisFee(tmpFee - protocolFee);
         buyEventNum -= sellEventNum;
         sellEventNum = 0;
@@ -551,7 +521,6 @@ contract Pool721 {
     } else if (totalNFTpoint == 0) {
       totalFTfee += tmpTotalFee;
     } else {
-      // FTのステーキングしている人がいたら（1人でも）、NFT/FTが半分ずつ
       totalFTfee += tmpTotalFee / 2;
       totalNFTfee += tmpTotalFee - tmpTotalFee / 2;
     }
