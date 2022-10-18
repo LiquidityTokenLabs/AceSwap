@@ -21,6 +21,7 @@ contract SampleNFT is ERC721Enumerable, Ownable {
     string memory _initBaseURI
   ) ERC721(_name, _symbol) {
     setBaseURI(_initBaseURI);
+    _tokenIdTracker.increment();
   }
 
   function tokenURI(uint256 _tokenId)
@@ -57,9 +58,9 @@ contract SampleNFT is ERC721Enumerable, Ownable {
   }
 
   function mint() public {
-    _tokenIdTracker.increment();
     uint256 tokenId = _tokenIdTracker.current();
     _mint(msg.sender, tokenId);
+    _tokenIdTracker.increment();
   }
 
   function batchApprove(uint256[] calldata tokenIds, address to) public {
