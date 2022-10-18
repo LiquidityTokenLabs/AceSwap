@@ -435,22 +435,22 @@ describe("結合テスト", function () {
 
   describe("2人がNFTをステーキング → FTからNFTにスワップ → NFTからFTにスワップ → 流動性解除", () => {
     it("NFTをステーキングするとEventが発行される", async () => {
-      await sampleNFT.connect(stakerNFT).approve(pool721.address, 5)
+      await sampleNFT.connect(stakerNFT).approve(pool721.address, 21)
       expect(
-        await pool721.connect(stakerNFT).stakeNFT(["5"], stakerNFT.address)
+        await pool721.connect(stakerNFT).stakeNFT(["21"], stakerNFT.address)
       ).to.emit(pool721, "StakeNFT")
     })
     it("NFTをステーキングするとEventが発行される", async () => {
-      await sampleNFT.connect(stakerNFT2).approve(pool721.address, 6)
+      await sampleNFT.connect(stakerNFT2).approve(pool721.address, 22)
       expect(
-        await pool721.connect(stakerNFT2).stakeNFT(["6"], stakerNFT2.address)
+        await pool721.connect(stakerNFT2).stakeNFT(["22"], stakerNFT2.address)
       ).to.emit(pool721, "StakeNFT")
     })
     it("FTからNFTにスワップをするとEventが発行される", async () => {
       expect(
         await pool721
           .connect(swapperFTforNFT)
-          .swapFTforNFT(["5", "6"], swapperFTforNFT.address, {
+          .swapFTforNFT(["21", "22"], swapperFTforNFT.address, {
             value: ethers.utils.parseEther("0.023"),
           })
       ).to.emit(pool721, "SwapFTforNFT")
@@ -541,160 +541,6 @@ describe("結合テスト", function () {
       expect(await pool721.stakeNFTprice()).to.equal(
         ethers.utils.parseEther("0.011")
       )
-    })
-  })
-
-  describe("NFTをステーキング → FTからNFTにスワップ → NFTからFTにスワップ → 流動性解除", () => {
-    //spotPrice: 0.01
-    //sellNum: 0
-    //buyNum: 0
-    //stakeFTprice: 0.01
-    //stakeNFTprice: 0.01
-    it("NFTをステーキングするとEventが発行される", async () => {
-      await sampleNFT.connect(stakerNFT).approve(pool721.address, 1)
-      expect(
-        await pool721.connect(stakerNFT).stakeNFT(["1"], stakerNFT.address)
-      ).to.emit(pool721, "StakeNFT")
-    })
-    it("NFTをステーキングするとEventが発行される", async () => {
-      await sampleNFT.connect(stakerNFT2).approve(pool721.address, 2)
-      expect(
-        await pool721.connect(stakerNFT2).stakeNFT(["2"], stakerNFT2.address)
-      ).to.emit(pool721, "StakeNFT")
-    })
-    it("NFTはstakerAが持っている", async function () {
-      expect(await sampleNFT.connect(swapperNFTforFT).ownerOf(3)).to.equal(
-        swapperNFTforFT.address
-      )
-    })
-    it("NFTはstakerAが持っている", async function () {
-      expect(await sampleNFT.connect(swapperNFTforFT).ownerOf(4)).to.equal(
-        swapperNFTforFT.address
-      )
-    })
-    it("FTからNFTにスワップするとEventが発行される", async () => {
-      await sampleNFT.connect(swapperNFTforFT).approve(pool721.address, 3)
-      await sampleNFT.connect(swapperNFTforFT).approve(pool721.address, 4)
-      expect(
-        await pool721
-          .connect(swapperNFTforFT)
-          .swapNFTforFT(
-            ["3", "4"],
-            ethers.utils.parseEther("0.0136"),
-            swapperNFTforFT.address
-          )
-      ).to.emit(pool721, "SwapNFTforFT")
-    })
-    it("FTからNFTにスワップするとEventが発行される", async () => {
-      expect(
-        await pool721
-          .connect(swapperFTforNFT)
-          .swapFTforNFT(["9", "10"], swapperFTforNFT.address, {
-            value: ethers.utils.parseEther("0.017"),
-          })
-      ).to.emit(pool721, "SwapFTforNFT")
-    })
-    it("NFTの流動性を解除するとEventが発行される", async () => {
-      let beforBalance = await ethers.provider.getBalance(stakerFT.address)
-      await expect(
-        pool721.connect(stakerFT).withdrawFT(1, [], stakerFT.address)
-      ).to.emit(pool721, "WithdrawFT")
-      let afterBalance = await ethers.provider.getBalance(stakerFT.address)
-      expect(afterBalance - beforBalance).to.above(0)
-      console.log(afterBalance - beforBalance)
-    })
-    it("NFTの流動性を解除するとEventが発行される", async () => {
-      let beforBalance = await ethers.provider.getBalance(stakerFT2.address)
-      await expect(
-        pool721.connect(stakerFT2).withdrawFT(1, [], stakerFT2.address)
-      ).to.emit(pool721, "WithdrawFT")
-      let afterBalance = await ethers.provider.getBalance(stakerFT2.address)
-      expect(afterBalance - beforBalance).to.above(0)
-      console.log(afterBalance - beforBalance)
-    })
-    it("プールのspotPrice", async () => {
-      const poolInfo = await pool721.connect(stakerFT).getPoolInfo()
-      expect(poolInfo.spotPrice).to.equal(ethers.utils.parseEther("0.01"))
-    })
-    it("プールのEventの状態は想定と同じ", async () => {
-      expect(await pool721.buyEventNum()).to.equal(0)
-      expect(await pool721.sellEventNum()).to.equal(0)
-    })
-    it("プールの状態は想定と同じ", async () => {
-      const poolInfo = await pool721.getPoolInfo()
-      expect(poolInfo.buyNum).to.equal(0)
-      expect(poolInfo.sellNum).to.equal(0)
-      expect(poolInfo.delta).to.equal(ethers.utils.parseEther("0.001"))
-      expect(poolInfo.divergence).to.equal(ethers.utils.parseEther("0.8"))
-    })
-    it("プールのstakeFTpriceが等しい", async () => {
-      expect(await pool721.stakeFTprice()).to.equal(
-        ethers.utils.parseEther("0.01")
-      )
-    })
-    it("プールのstakeNFTpriceが等しい", async () => {
-      expect(await pool721.stakeNFTprice()).to.equal(
-        ethers.utils.parseEther("0.01")
-      )
-    })
-    //spotPrice: 0.01
-    //sellNum: 0
-    //buyNum: 0
-    //stakeFTprice: 0.01
-    //stakeNFTprice: 0.01
-  })
-  describe("NFTをステーキング → FTをステーキング → NFTからFTにスワップ → FTからNFTにスワップ → 流動性解除", () => {
-    it("NFTをステーキングするとEventが発行される", async () => {
-      await sampleNFT.connect(stakerNFT).approve(pool721.address, 11)
-      expect(
-        await pool721.connect(stakerNFT).stakeNFT(["11"], stakerNFT.address)
-      ).to.emit(pool721, "StakeNFT")
-    })
-    it("NFTをステーキングするとEventが発行される", async () => {
-      expect(
-        await pool721.connect(stakerFT).stakeFT(1, stakerFT.address, {
-          value: ethers.utils.parseEther("0.0080"),
-        })
-      ).to.emit(pool721, "StakeFT")
-    })
-    it("FTからNFTにスワップするとEventが発行される", async () => {
-      expect(
-        await pool721
-          .connect(swapperFTforNFT)
-          .swapFTforNFT(["11"], swapperFTforNFT.address, {
-            value: ethers.utils.parseEther("0.010"),
-          })
-      ).to.emit(pool721, "SwapFTforNFT")
-    })
-    it("FTからNFTにスワップするとEventが発行される", async () => {
-      await sampleNFT.connect(swapperNFTforFT).approve(pool721.address, 12)
-      expect(
-        await pool721
-          .connect(swapperNFTforFT)
-          .swapNFTforFT(
-            ["12"],
-            ethers.utils.parseEther("0.0080"),
-            swapperNFTforFT.address
-          )
-      ).to.emit(pool721, "SwapNFTforFT")
-    })
-    it("NFTの流動性を解除するとEventが発行される", async () => {
-      let beforBalance = await ethers.provider.getBalance(stakerNFT.address)
-      await expect(
-        pool721.connect(stakerNFT).withdrawNFT(["12"], stakerNFT.address)
-      ).to.emit(pool721, "WithdrawNFT")
-      let afterBalance = await ethers.provider.getBalance(stakerNFT.address)
-      expect(afterBalance - beforBalance).to.above(0)
-      console.log(afterBalance - beforBalance)
-    })
-    it("NFTの流動性を解除するとEventが発行される", async () => {
-      let beforBalance = await ethers.provider.getBalance(stakerFT.address)
-      await expect(
-        pool721.connect(stakerFT).withdrawFT(1, [], stakerFT.address)
-      ).to.emit(pool721, "WithdrawFT")
-      let afterBalance = await ethers.provider.getBalance(stakerFT.address)
-      expect(afterBalance - beforBalance).to.above(0)
-      console.log(afterBalance - beforBalance)
     })
   })
 })

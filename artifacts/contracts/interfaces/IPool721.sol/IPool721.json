@@ -14,31 +14,6 @@
         },
         {
           "indexed": false,
-          "internalType": "uint256",
-          "name": "userSellNum",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "userSellAmount",
-          "type": "uint256"
-        }
-      ],
-      "name": "StakeFT",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "user",
-          "type": "address"
-        },
-        {
-          "indexed": false,
           "internalType": "uint256[]",
           "name": "tokenIds",
           "type": "uint256[]"
@@ -460,24 +435,6 @@
       "name": "setRouterAddress",
       "outputs": [],
       "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "itemNum",
-          "type": "uint256"
-        },
-        {
-          "internalType": "address",
-          "name": "user",
-          "type": "address"
-        }
-      ],
-      "name": "stakeFT",
-      "outputs": [],
-      "stateMutability": "payable",
       "type": "function"
     },
     {
