@@ -43,3 +43,5 @@ next-env.d.ts
 /artifacts/contracts/**/*.dbg.json
 
 .env
+
+/typechain-types
