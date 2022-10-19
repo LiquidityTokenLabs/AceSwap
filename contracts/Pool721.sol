@@ -70,7 +70,6 @@ contract Pool721 {
 
   //EVENT
   event StakeNFT(address indexed user, uint256 userNum, uint256[] tokenIds);
-  event StakeFT(address indexed user, uint256 userNum, uint256 userAmount);
   event SwapNFTforFT(
     address indexed user,
     uint256[] tokenIds,
