@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "test": "npx hardhat test",
+    "coverage": "npx hardhat coverage"
   },
   "dependencies": {
     "@apollo/client": "^3.6.9",
