@@ -1,0 +1,197 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "ICurve",
+  "sourceName": "contracts/interfaces/ICurve.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint128",
+          "name": "spotPrice",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "delta",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint256",
+          "name": "divergence",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "numItems",
+          "type": "uint256"
+        }
+      ],
+      "name": "getBuyFeeInfo",
+      "outputs": [
+        {
+          "internalType": "enum CurveErrorCodes.Error",
+          "name": "error",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalFee",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint128",
+          "name": "spotPrice",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "delta",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint256",
+          "name": "divergence",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "numItems",
+          "type": "uint256"
+        }
+      ],
+      "name": "getBuyInfo",
+      "outputs": [
+        {
+          "internalType": "enum CurveErrorCodes.Error",
+          "name": "error",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint128",
+          "name": "newSpotPrice",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "newDelta",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint256",
+          "name": "newDivergence",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalFee",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint128",
+          "name": "spotPrice",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "delta",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint256",
+          "name": "divergence",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "numItems",
+          "type": "uint256"
+        }
+      ],
+      "name": "getSellFeeInfo",
+      "outputs": [
+        {
+          "internalType": "enum CurveErrorCodes.Error",
+          "name": "error",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalFee",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint128",
+          "name": "spotPrice",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "delta",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint256",
+          "name": "divergence",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "numItems",
+          "type": "uint256"
+        }
+      ],
+      "name": "getSellInfo",
+      "outputs": [
+        {
+          "internalType": "enum CurveErrorCodes.Error",
+          "name": "error",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint128",
+          "name": "newSpotPrice",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "newDelta",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint256",
+          "name": "newDivergence",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalFee",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

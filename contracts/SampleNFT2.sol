@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity ^0.8.0;
+pragma solidity =0.8.16;
 import 'hardhat/console.sol';
 
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
@@ -8,7 +8,7 @@ import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/Base64.sol';
 
-contract SampleNFT is ERC721Enumerable, Ownable {
+contract SampleNFT2 is ERC721Enumerable, Ownable {
   using Counters for Counters.Counter;
   using Strings for uint256;
 
@@ -36,7 +36,7 @@ contract SampleNFT is ERC721Enumerable, Ownable {
       '"name": "Astar Candy #',
       _tokenId.toString(),
       '",',
-      '"description": "This NFT is a limited edition NFT issued through a collaboration between Astar Network, CryptoBar P2P and AceSwap.sol.",',
+      '"description": "This NFT is a limited edition NFT issued through a collaboration between Astar Network, CryptoBar P2P and YomiSwap.",',
       '"image":',
       baseURI,
       '}'
