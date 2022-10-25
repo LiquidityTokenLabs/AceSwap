@@ -5,7 +5,7 @@ import '@nomiclabs/hardhat-ethers';
 import 'solidity-coverage';
 
 const config: HardhatUserConfig = {
-  solidity: '0.8.16',
+  solidity: '0.8.17',
   gasReporter: {
     enabled: true,
   },

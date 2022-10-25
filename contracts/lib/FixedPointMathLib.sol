@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0
-pragma solidity =0.8.16;
+pragma solidity =0.8.17;
 
 library FixedPointMathLib {
   uint256 internal constant WAD = 1e18;

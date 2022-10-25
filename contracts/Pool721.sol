@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: None
-pragma solidity =0.8.16;
-import 'hardhat/console.sol';
+pragma solidity =0.8.17;
 
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import './interfaces/ICurve.sol';

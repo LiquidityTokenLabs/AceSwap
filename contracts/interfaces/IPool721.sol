@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: None
-pragma solidity =0.8.16;
+pragma solidity =0.8.17;
 
 interface IPool721 {
   //VARIABLE
