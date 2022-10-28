@@ -16,6 +16,9 @@ contract Pool721 {
   //@param address of collection
   address public collection;
 
+  //@param address of bondingCurve
+  address public bondingCurve;
+
   //@param address of router
   address public router;
 
@@ -43,8 +46,14 @@ contract Pool721 {
   //@param total fee of NFT
   uint256 public totalNFTfee;
 
+  //@param isOtherStake: flg other stake
+  bool public isOtherStake;
+
   //@param poolInfo: pool information
   PoolInfo public poolInfo;
+
+  //@param holdIds: this address hold TokenIds
+  uint256[] public holdIds;
 
   //@param userInfo: list info of user Staking
   mapping(address => UserInfo) userInfo;
@@ -59,39 +68,12 @@ contract Pool721 {
   }
 
   struct PoolInfo {
-    address bondingCurve;
     uint128 spotPrice;
     uint128 delta;
     uint256 divergence;
     uint256 buyNum;
     uint256 sellNum;
   }
-
-  //EVENT
-  event StakeNFT(address indexed user, uint256 userNum, uint256[] tokenIds);
-  event SwapNFTforFT(
-    address indexed user,
-    uint256[] tokenIds,
-    uint256 totalFee
-  );
-  event SwapFTforNFT(
-    address indexed user,
-    uint256[] tokenIds,
-    uint256 totalFee
-  );
-  event WithdrawNFT(
-    address indexed user,
-    uint256[] tokenIds,
-    uint256 userNum,
-    uint256 userFee
-  );
-  event WithdrawFT(
-    address indexed user,
-    uint256[] tokenIds,
-    uint256 userNum,
-    uint256 userAmount,
-    uint256 userFee
-  );
 
   //CONSTRUCTOR
   //@notice initialization setting
@@ -105,7 +87,7 @@ contract Pool721 {
     address _router
   ) {
     collection = _collection;
-    poolInfo.bondingCurve = _bondingCurve;
+    bondingCurve = _bondingCurve;
     poolInfo.spotPrice = _spotPrice;
     stakeNFTprice = _spotPrice;
     stakeFTprice = _spotPrice;
@@ -120,15 +102,10 @@ contract Pool721 {
     _;
   }
 
-  modifier onlyOwnerOrRouter(address _user) {
-    require(_user == msg.sender || msg.sender == router);
-    _;
-  }
-
   //@notice Staking of NFT
-  function stakeNFT(uint256[] memory _tokenIds, address _user)
-    public
-    onlyOwnerOrRouter(_user)
+  function stakeNFT(uint256[] calldata _tokenIds, address _user)
+    external
+    onlyRouter
   {
     uint256 _itemNum = _tokenIds.length;
     require(_itemNum > 0, 'Not 0');
@@ -140,7 +117,7 @@ contract Pool721 {
       uint128 _newDelta,
       ,
       uint256 _totalFee
-    ) = ICurve(poolInfo.bondingCurve).getBuyInfo(
+    ) = ICurve(bondingCurve).getBuyInfo(
         stakeNFTprice,
         poolInfo.delta,
         poolInfo.divergence,
@@ -158,15 +135,13 @@ contract Pool721 {
 
     //intaraction
     _sendNFTs(_tokenIds, _itemNum, _user, address(this));
-
-    emit StakeNFT(_user, _itemNum, _tokenIds);
   }
 
   //@notice swap FT for NFT
-  function swapFTforNFT(uint256[] memory _tokenIds, address _user)
-    public
+  function swapFTforNFT(uint256[] calldata _tokenIds, address _user)
+    external
     payable
-    onlyOwnerOrRouter(_user)
+    onlyRouter
     returns (uint256 _protocolFee)
   {
     uint256 _itemNum = _tokenIds.length;
@@ -179,7 +154,7 @@ contract Pool721 {
       uint128 _newDelta,
       uint256 _newDivergence,
       uint256 _totalFee
-    ) = ICurve(poolInfo.bondingCurve).getBuyInfo(
+    ) = ICurve(bondingCurve).getBuyInfo(
         poolInfo.spotPrice,
         poolInfo.delta,
         poolInfo.divergence,
@@ -202,16 +177,14 @@ contract Pool721 {
     payable(_user).transfer(msg.value - _totalFee);
     payable(router).transfer(_protocolFee);
     _sendNFTs(_tokenIds, _tokenIds.length, address(this), _user);
-
-    emit SwapFTforNFT(_user, _tokenIds, _totalFee);
   }
 
   //@notice swap NFT for FT
   function swapNFTforFT(
-    uint256[] memory _tokenIds,
+    uint256[] calldata _tokenIds,
     uint256 _minExpectFee,
     address _user
-  ) public payable onlyOwnerOrRouter(_user) returns (uint256 _protocolFee) {
+  ) external payable onlyRouter returns (uint256 _protocolFee) {
     uint256 _itemNum = _tokenIds.length;
     require(_itemNum > 0, 'Not 0');
 
@@ -222,7 +195,7 @@ contract Pool721 {
       uint128 _newDelta,
       uint256 _newDivergence,
       uint256 _totalFee
-    ) = ICurve(poolInfo.bondingCurve).getSellInfo(
+    ) = ICurve(bondingCurve).getSellInfo(
         poolInfo.spotPrice,
         poolInfo.delta,
         poolInfo.divergence,
@@ -247,15 +220,13 @@ contract Pool721 {
 
     payable(_user).transfer(_totalFee);
     payable(router).transfer(_protocolFee);
-
-    //event
-    emit SwapNFTforFT(_user, _tokenIds, _totalFee);
   }
 
   //@notice withdraw NFT
-  function withdrawNFT(uint256[] memory _tokenIds, address _user)
-    public
+  function withdrawNFT(uint256[] calldata _tokenIds, address _user)
+    external
     payable
+    onlyRouter
   {
     uint256 _itemNum = _tokenIds.length;
     uint256 _userNum = userInfo[_user].userInitBuyNum;
@@ -283,7 +254,7 @@ contract Pool721 {
         uint128 _newDelta,
         ,
 
-      ) = ICurve(poolInfo.bondingCurve).getSellInfo(
+      ) = ICurve(bondingCurve).getSellInfo(
           stakeNFTprice,
           poolInfo.delta,
           FixedPointMathLib.WAD,
@@ -300,7 +271,7 @@ contract Pool721 {
 
       //calc FT instead NFT
       (CurveErrorCodes.Error error, , , , uint256 _totalFee2) = ICurve(
-        poolInfo.bondingCurve
+        bondingCurve
       ).getSellInfo(
           stakeNFTprice,
           poolInfo.delta,
@@ -316,7 +287,7 @@ contract Pool721 {
         uint128 _newDelta,
         ,
 
-      ) = ICurve(poolInfo.bondingCurve).getBuyInfo(
+      ) = ICurve(bondingCurve).getBuyInfo(
           stakeFTprice,
           poolInfo.delta,
           FixedPointMathLib.WAD,
@@ -340,21 +311,17 @@ contract Pool721 {
     if (_userFee > 0) {
       payable(_user).transfer(_userFee);
     }
-
-    //event
-    emit WithdrawNFT(_user, _tokenIds, _userNum, _userFee);
   }
 
   //@notice withdraw FT
   function withdrawFT(
     uint256 _userSellNum,
-    uint256[] memory _tokenIds,
+    uint256[] calldata _tokenIds,
     address _user
-  ) public payable {
+  ) external payable onlyRouter {
     uint256 _itemNum = _tokenIds.length;
     uint256 _userNum = userInfo[_user].userInitSellNum;
     uint256 _userSellAmount = userInfo[_user].userInitSellAmount;
-    uint256 _userFee = _calcFTfee(_user);
     uint256 _fee = 0;
 
     //check
@@ -371,7 +338,7 @@ contract Pool721 {
     userInfo[_user].userInitSellNum = 0;
     userInfo[_user].userInitSellAmount = 0;
     totalFTpoint -= userInfo[_user].userFTpoint;
-    totalFTfee -= _userFee;
+
     userInfo[_user].userFTpoint = 0;
 
     //up stakeFTprice
@@ -382,7 +349,7 @@ contract Pool721 {
         uint128 _newDelta,
         ,
 
-      ) = ICurve(poolInfo.bondingCurve).getBuyInfo(
+      ) = ICurve(bondingCurve).getBuyInfo(
           stakeFTprice,
           poolInfo.delta,
           FixedPointMathLib.WAD,
@@ -396,7 +363,7 @@ contract Pool721 {
     //if pool not liquidity FT
     if (_userSellNum < _userNum) {
       (CurveErrorCodes.Error error, , , , uint256 _totalCost) = ICurve(
-        poolInfo.bondingCurve
+        bondingCurve
       ).getBuyInfo(
           stakeFTprice,
           poolInfo.delta,
@@ -411,7 +378,7 @@ contract Pool721 {
         ,
         ,
 
-      ) = ICurve(poolInfo.bondingCurve).getSellInfo(
+      ) = ICurve(bondingCurve).getSellInfo(
           stakeNFTprice,
           poolInfo.delta,
           FixedPointMathLib.WAD,
@@ -423,21 +390,22 @@ contract Pool721 {
       sellEventNum -= _itemNum;
 
       _updateStakeInfo(2, _newstakeNFTprice, 0);
-      _sendNFTs(_tokenIds, _itemNum, address(this), _user);
 
       _fee = _totalCost;
     }
-
+    {
+      uint256 _userFee = _calcFTfee(_user);
+      totalFTfee -= _userFee;
+      if (_userFee > 0) {
+        payable(_user).transfer(_userFee);
+      }
+    }
     if (_fee < _userSellAmount) {
       payable(_user).transfer(_userSellAmount - _fee);
     }
-
-    if (_userFee > 0) {
-      payable(_user).transfer(_userFee);
+    if (_itemNum > 0) {
+      _sendNFTs(_tokenIds, _itemNum, address(this), _user);
     }
-
-    //event
-    emit WithdrawFT(_user, _tokenIds, _userNum, _userSellAmount, _userFee);
   }
 
   //CALCULATION
@@ -481,7 +449,7 @@ contract Pool721 {
     if (buyEventNum > 0 && sellEventNum > 0) {
       if (buyEventNum >= sellEventNum) {
         (CurveErrorCodes.Error calcProfitError, uint256 tmpFee) = ICurve(
-          poolInfo.bondingCurve
+          bondingCurve
         ).getBuyFeeInfo(
             poolInfo.spotPrice,
             poolInfo.delta,
@@ -496,7 +464,7 @@ contract Pool721 {
         sellEventNum = 0;
       } else if (sellEventNum > buyEventNum) {
         (CurveErrorCodes.Error calcProfitError, uint256 tmpFee) = ICurve(
-          poolInfo.bondingCurve
+          bondingCurve
         ).getSellFeeInfo(
             poolInfo.spotPrice,
             poolInfo.delta,
@@ -559,8 +527,9 @@ contract Pool721 {
   }
 
   //@notice batch nft transfer
+  //@notice batch nft transfer
   function _sendNFTs(
-    uint256[] memory _tokenIds,
+    uint256[] calldata _tokenIds,
     uint256 _itemNum,
     address _from,
     address _to
@@ -568,6 +537,34 @@ contract Pool721 {
     unchecked {
       for (uint256 i = 0; i < _itemNum; i++) {
         IERC721(collection).safeTransferFrom(_from, _to, _tokenIds[i], '');
+      }
+    }
+    if (_from == address(this)) {
+      _removeHoldIds(_tokenIds);
+    } else if (_to == address(this)) {
+      _addHoldIds(_tokenIds);
+    }
+  }
+
+  //@notice add tokenId to list hold token
+  function _addHoldIds(uint256[] calldata _tokenIds) internal {
+    for (uint256 i = 0; i < _tokenIds.length; i++) {
+      holdIds.push(_tokenIds[i]);
+    }
+  }
+
+  //@notice remove tokenId to list hold token
+  function _removeHoldIds(uint256[] calldata _tokenIds) internal {
+    for (uint256 j = 0; j < _tokenIds.length; j++) {
+      uint256 _num = holdIds.length;
+      for (uint256 i = 0; i < _num; i++) {
+        if (holdIds[i] == _tokenIds[j]) {
+          if (i != _num - 1) {
+            holdIds[i] = holdIds[_num - 1];
+          }
+          holdIds.pop();
+          break;
+        }
       }
     }
   }
@@ -579,7 +576,7 @@ contract Pool721 {
     uint128 _spotPrice,
     uint256 _divergence
   ) external view returns (uint256) {
-    (, , , , uint256 _totalFee) = ICurve(poolInfo.bondingCurve).getBuyInfo(
+    (, , , , uint256 _totalFee) = ICurve(bondingCurve).getBuyInfo(
       _spotPrice,
       poolInfo.delta,
       _divergence,
@@ -594,7 +591,7 @@ contract Pool721 {
     uint128 _spotPrice,
     uint256 _divergence
   ) external view returns (uint256) {
-    (, , , , uint256 _totalFee) = ICurve(poolInfo.bondingCurve).getSellInfo(
+    (, , , , uint256 _totalFee) = ICurve(bondingCurve).getSellInfo(
       _spotPrice,
       poolInfo.delta,
       _divergence,

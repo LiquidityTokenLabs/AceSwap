@@ -13,36 +13,49 @@ contract Router is Ownable {
   //@param protocolFee: total fee of protocolAmount
   uint256 public totalProtocolFee;
 
-  //@param totalFee: total fee
-  uint256 public totalFee;
-
   //@param supportFeeRatio: support fee ratio
   uint256 public supporterFeeRatio = 5e16;
-
-  //@param list of bonding curve
-  address[] public bondingCurveList;
 
   //@param list of collection
   address[] public collectionList;
 
   //MAPPING
-  //@param collectionPoolList: list pool of collection
-  mapping(address => address[]) collectionPoolList;
-
   //@param isCollectionApprove: approve of collection
-  mapping(address => bool) isCollectionApprove;
-
-  //@param userStakePoolList: list pool of user Staking
-  mapping(address => address[]) userStakePoolList;
+  mapping(address => bool) public isCollectionApprove;
 
   //@param isBondingCurveApprove: approve of bondingCurve
-  mapping(address => bool) isBondingCurveApprove;
+  mapping(address => bool) public isBondingCurveApprove;
 
-  //@param totalSupportFeeList: list of total fee of support
-  mapping(address => uint256) totalSupporterFeeList;
+  //@param factoryApprove: approve of factory
+  mapping(address => bool) public isFactoryApprove;
 
   //@param supporterApprove: approve of supporter
-  mapping(address => bool) isSupporterApprove;
+  mapping(address => bool) public isSupporterApprove;
+
+  //@param totalSupportFeeList: list of total fee of support
+  mapping(address => uint256) public supporterFee;
+
+  //@param collectionPoolList: list pool of collection
+  mapping(address => CollectionPoolList) private collectionPoolList;
+
+  //@param userStakePoolList: list pool of user Staking
+  mapping(address => UserStakePoolList) private userStakePoolList;
+
+  //@param CollectionPoolList: pool list of collection
+  struct CollectionPoolList {
+    address[] otherStakePools;
+    address[] nonOtherStakePools;
+  }
+
+  //@param UserStakePoolList: pool list of stake
+  struct UserStakePoolList {
+    address[] stakeFTpools;
+    address[] stakeNFTpools;
+  }
+
+  struct input {
+    uint256[] tokenIds;
+  }
 
   //EVENT
   event StakeNFT(
@@ -82,10 +95,21 @@ contract Router is Ownable {
   );
   event Received(address, uint256);
 
+  modifier onlyFactory() {
+    require(isFactoryApprove[msg.sender] == true, 'Only Factory');
+    _;
+  }
+
   //MAIN
   //@notice stake of nft
   function stakeNFT(address _pool, uint256[] calldata _tokenIds) public {
-    userStakePoolList[msg.sender].push(_pool);
+    bool _tmpBool = _checkArray(
+      userStakePoolList[msg.sender].stakeNFTpools,
+      _pool
+    );
+    if (_tmpBool == false) {
+      userStakePoolList[msg.sender].stakeNFTpools.push(_pool);
+    }
     IPool721(_pool).stakeNFT(_tokenIds, msg.sender);
     emit StakeNFT(msg.sender, _pool, _tokenIds.length, _tokenIds);
   }
@@ -109,8 +133,7 @@ contract Router is Ownable {
       _minExpectFee,
       msg.sender
     );
-    (uint256 protocolFee, uint256 supporterFee) = _calcFee(profitAmount);
-    _updateFee(profitAmount, protocolFee, _support, supporterFee);
+    _updateFee(_support, profitAmount);
     emit SwapNFTforFT(msg.sender, _pool, _tokenIds, _totalFee, _support);
   }
 
@@ -131,57 +154,64 @@ contract Router is Ownable {
       _tokenIds,
       msg.sender
     );
-    (uint256 protocolFee, uint256 supporterFee) = _calcFee(profitAmount);
-    _updateFee(profitAmount, protocolFee, _support, supporterFee);
+    _updateFee(_support, profitAmount);
     emit SwapFTforNFT(msg.sender, _pool, _tokenIds, _totalFee, _support);
   }
 
   //@notice batchSwapNFTforFT
   function batchSwapNFTforFT(
-    address[] memory _poolList,
-    uint256[] calldata _tokenIds,
+    address[] calldata _poolList,
+    input[] calldata InputArray,
     uint256[] calldata _minExpects,
-    address _support,
-    uint256[] memory _pattern
+    address _supporter
   ) public {
     uint256 totalProfitAmount;
-    for (uint256 i = 0; i < _pattern.length; i++) {
-      uint256[] memory array;
-      for (uint256 j = 0; j < _pattern[i]; j++) {
-        array[j] = _tokenIds[i];
-      }
+    for (uint256 i = 0; i < _poolList.length; ) {
       uint256 profitAmount = IPool721(_poolList[i]).swapNFTforFT(
-        array,
+        InputArray[i].tokenIds,
         _minExpects[i],
         msg.sender
       );
       totalProfitAmount += profitAmount;
+      emit SwapNFTforFT(
+        msg.sender,
+        _poolList[i],
+        InputArray[i].tokenIds,
+        profitAmount,
+        _supporter
+      );
+      unchecked {
+        ++i;
+      }
     }
-    (uint256 protocolFee, uint256 supporterFee) = _calcFee(totalProfitAmount);
-    _updateFee(totalProfitAmount, protocolFee, _support, supporterFee);
+    _updateFee(_supporter, totalProfitAmount);
   }
 
   //@notice batchSwapFTforNFT
   function batchSwapFTforNFT(
-    address[] memory _poolList,
-    uint256[] calldata _tokenIds,
-    address _support,
-    uint256[] memory _pattern
+    address[] calldata _poolList,
+    input[] calldata InputArray,
+    address _supporter
   ) public {
     uint256 totalProfitAmount;
-    for (uint256 i = 0; i < _pattern.length; i++) {
-      uint256[] memory array;
-      for (uint256 j = 0; j < _pattern[i]; j++) {
-        array[j] = _tokenIds[i];
-      }
+    for (uint256 i = 0; i < _poolList.length; ) {
       uint256 profitAmount = IPool721(_poolList[i]).swapFTforNFT(
-        array,
+        InputArray[i].tokenIds,
         msg.sender
       );
       totalProfitAmount += profitAmount;
+      emit SwapFTforNFT(
+        msg.sender,
+        _poolList[i],
+        InputArray[i].tokenIds,
+        profitAmount,
+        _supporter
+      );
+      unchecked {
+        ++i;
+      }
     }
-    (uint256 protocolFee, uint256 supporterFee) = _calcFee(totalProfitAmount);
-    _updateFee(totalProfitAmount, protocolFee, _support, supporterFee);
+    _updateFee(_supporter, totalProfitAmount);
   }
 
   //@notice withdraw NFT and Fee
@@ -190,8 +220,8 @@ contract Router is Ownable {
       msg.sender
     );
     uint256 _userFee = IPool721(_pool).getUserStakeNFTfee(msg.sender);
+    _removeAddress(userStakePoolList[msg.sender].stakeNFTpools, _pool);
 
-    _removeUserStakePool(msg.sender, _pool);
     IPool721(_pool).withdrawNFT(_tokenIds, msg.sender);
     emit WithdrawNFT(
       msg.sender,
@@ -213,7 +243,19 @@ contract Router is Ownable {
     );
     uint256 _userFee = IPool721(_pool).getUserStakeFTfee(msg.sender);
 
-    _removeUserStakePool(msg.sender, _pool);
+    _removeAddress(userStakePoolList[msg.sender].stakeFTpools, _pool);
+    (bool _tmpBool, bool _isOtherStake) = _checkPool(_pool);
+    if (_tmpBool == true) {
+      address _collection = IPool721(_pool).collection();
+      if (_isOtherStake == true) {
+        _removeAddress(collectionPoolList[_collection].otherStakePools, _pool);
+      } else if (_isOtherStake == false) {
+        _removeAddress(
+          collectionPoolList[_collection].nonOtherStakePools,
+          _pool
+        );
+      }
+    }
     IPool721(_pool).withdrawFT(_userSellNum, _tokenIds, msg.sender);
     emit WithdrawFT(
       msg.sender,
@@ -228,6 +270,7 @@ contract Router is Ownable {
   //@notice withdraw protocol fee
   function withdrawProtocolFee() public payable onlyOwner {
     //check
+    require(totalProtocolFee > 0, 'Not Fee');
 
     //effect
     totalProtocolFee = 0;
@@ -239,58 +282,19 @@ contract Router is Ownable {
   //@notice withdraw support fee
   function withdrawSupportFee() public payable {
     //check
-    require(isSupporterApprove[msg.sender], "You don't have supporter approve");
+    require(isSupporterApprove[msg.sender], 'Not Approve');
 
     //effect
-    totalSupporterFeeList[msg.sender] = 0;
+    supporterFee[msg.sender] = 0;
 
     //intaraction
-    payable(msg.sender).transfer(totalSupporterFeeList[msg.sender]);
-  }
-
-  //SET
-  //@notice approve for bonding curve
-  function setBondingCurveApprove(address _bondingCurve, bool _approve)
-    public
-    onlyOwner
-  {
-    if (_approve == true) {
-      bondingCurveList.push(_bondingCurve);
-      isBondingCurveApprove[_bondingCurve] = _approve;
-    } else if (_approve == false) {
-      _removeBondingCurve(_bondingCurve);
-      isBondingCurveApprove[_bondingCurve] = _approve;
-    }
-  }
-
-  //@notice approve for bonding curve
-  function setCollectionApprove(address _collection, bool _approve)
-    public
-    onlyOwner
-  {
-    if (_approve == true) {
-      collectionList.push(_collection);
-      isCollectionApprove[_collection] = _approve;
-    } else if (_approve == false) {
-      _removeCollection(_collection);
-      isCollectionApprove[_collection] == _approve;
-    }
-  }
-
-  function addCollectionPoolList(address _collection, address _pool) public {
-    console.log(_pool);
-    collectionPoolList[_collection].push(_pool);
+    payable(msg.sender).transfer(supporterFee[msg.sender]);
   }
 
   //GET
   //@notice get list of collection
   function getCollectionList() external view returns (address[] memory) {
     return collectionList;
-  }
-
-  //@notice get list of bonding curve
-  function getBondingCurveList() external view returns (address[] memory) {
-    return bondingCurveList;
   }
 
   //@notice get approve of collection
@@ -311,94 +315,134 @@ contract Router is Ownable {
     return isBondingCurveApprove[_bondingCurve];
   }
 
+  //@notice get approve of bonding curve
+  function getIsFactoryApprove(address _factory) external view returns (bool) {
+    return isFactoryApprove[_factory];
+  }
+
+  //@notice get approve of bonding curve
+  function getIsSupporterApprove(address _supporter)
+    external
+    view
+    returns (bool)
+  {
+    return isSupporterApprove[_supporter];
+  }
+
   //@notice get list of collection pool
   function getCollectionPoolList(address _collection)
     external
     view
-    returns (address[] memory)
+    returns (CollectionPoolList memory)
   {
     return collectionPoolList[_collection];
   }
 
-  //@notice get info of pool
-  function getPoolInfo(address pool)
+  function getUserStakePoolList(address _user)
     external
-    returns (IPool721.PoolInfo memory poolInfo)
+    view
+    returns (UserStakePoolList memory)
   {
-    return IPool721(pool).getPoolInfo();
+    return userStakePoolList[_user];
   }
 
-  //@notice get info of user
-  function getUserInfo(address _pool, address _user)
-    external
-    returns (IPool721.UserInfo memory userInfo)
+  //SET
+  //@notice approve for bonding curve
+  function setCollectionApprove(address _collection, bool _approve)
+    public
+    onlyOwner
   {
-    return IPool721(_pool).getUserInfo(_user);
+    if (_approve == true) {
+      collectionList.push(_collection);
+      isCollectionApprove[_collection] = _approve;
+    } else if (_approve == false) {
+      _removeAddress(collectionList, _collection);
+      isCollectionApprove[_collection] = _approve;
+    }
+  }
+
+  //@notice approve for bonding curve
+  function setBondingCurveApprove(address _bondingCurve, bool _approve)
+    external
+    onlyOwner
+  {
+    isBondingCurveApprove[_bondingCurve] = _approve;
+  }
+
+  //@notice approve for bonding curve
+  function setFactoryApprove(address _factory, bool _approve)
+    external
+    onlyOwner
+  {
+    isFactoryApprove[_factory] = _approve;
+  }
+
+  //@notice approve for bonding curve
+  function setSupporterApprove(address _supporter, bool _approve)
+    external
+    onlyOwner
+  {
+    isSupporterApprove[_supporter] = _approve;
+  }
+
+  //@notice approve for bonding curve
+  function addOtherStakePool(address _pool) external onlyFactory {
+    address _collection = IPool721(_pool).collection();
+    collectionPoolList[_collection].otherStakePools.push(_pool);
+  }
+
+  //@notice approve for bonding curve
+  function addNonOtherStakePool(address _pool) external onlyFactory {
+    address _collection = IPool721(_pool).collection();
+    collectionPoolList[_collection].nonOtherStakePools.push(_pool);
   }
 
   //INTERNAL
-  //@notice calculate of fee
-  function _calcFee(uint256 _totalProfitAmount)
+  function _checkPool(address _pool)
     internal
-    view
-    returns (uint256 _protocolFee, uint256 _supporterFee)
+    returns (bool _tmpBool, bool _isOtherStake)
   {
-    _supporterFee = _totalProfitAmount.fmul(
-      supporterFeeRatio,
-      FixedPointMathLib.WAD
-    );
-    _protocolFee = _totalProfitAmount - _supporterFee;
+    IPool721.PoolInfo memory poolInfo = IPool721(_pool).getPoolInfo();
+    _isOtherStake = IPool721(_pool).isOtherStake();
+    _tmpBool = false;
+    if (poolInfo.buyNum == 0 && poolInfo.sellNum == 0) {
+      _tmpBool = true;
+    }
   }
 
-  //@notice update of fee
-  function _updateFee(
-    uint256 _addfee,
-    uint256 _addProtocolFee,
-    address _supporter,
-    uint256 _addSupporterFee
-  ) internal {
-    totalFee += _addfee;
-    totalProtocolFee += _addProtocolFee;
-    totalSupporterFeeList[_supporter] += _addSupporterFee;
+  //@notice check array
+  function _checkArray(address[] memory _array, address _target)
+    internal
+    pure
+    returns (bool _tmpBool)
+  {
+    uint256 _arrayNum = _array.length;
+    _tmpBool = false;
+    for (uint256 i = 0; i < _arrayNum; ) {
+      if (_array[i] == _target) {
+        _tmpBool = true;
+      }
+    }
+    return _tmpBool;
   }
 
-  //@notice remove collection from collectionList
-  function _removeCollection(address _collection) internal {
-    _removeAddress(collectionList, _collection);
-  }
-
-  // @notice remove pool from collectionPool
-  function _removeCollectionPool(address _pool) internal {
-    address _collection = IPool721(_pool).collection();
-    _removeAddress(collectionPoolList[_collection], _pool);
-  }
-
-  //@notice remove pool from userStakePoolList
-  function _removeUserStakePool(address _user, address _pool) internal {
-    _removeAddress(userStakePoolList[_user], _pool);
-  }
-
-  //@notice remove bondingCurve from bondingCurveList
-  function _removeBondingCurve(address _bondingCurve) internal {
-    _removeAddress(bondingCurveList, _bondingCurve);
+  //@notice calc update fee
+  function _updateFee(address _supporter, uint256 _profitAmount) internal {
+    if (_supporter != address(0)) {
+      uint256 _supporterFee = _profitAmount.fmul(
+        supporterFeeRatio,
+        FixedPointMathLib.WAD
+      );
+      uint256 _protocolFee = _profitAmount - _supporterFee;
+      totalProtocolFee += _protocolFee;
+      supporterFee[_supporter] += _supporterFee;
+    } else if (_supporter == address(0)) {
+      totalProtocolFee += _profitAmount;
+    }
   }
 
   //@notice remove address from address array
   function _removeAddress(address[] storage _array, address _target) internal {
-    uint256 _num = _array.length;
-    for (uint256 i = 0; i < _num; i++) {
-      if (_array[i] == _target) {
-        if (i != _num - 1) {
-          _array[i] = _array[_num - 1];
-        }
-        _array.pop();
-        break;
-      }
-    }
-  }
-
-  //@notice remove uint256 from uint256 array
-  function _removeUint(uint256[] storage _array, uint256 _target) internal {
     uint256 _num = _array.length;
     for (uint256 i = 0; i < _num; i++) {
       if (_array[i] == _target) {

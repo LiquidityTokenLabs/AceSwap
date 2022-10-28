@@ -7,6 +7,8 @@ interface IPool721 {
 
   function collection() external returns (address);
 
+  function isOtherStake() external returns (bool);
+
   function router() external returns (address);
 
   function sellEventNum() external returns (uint256);

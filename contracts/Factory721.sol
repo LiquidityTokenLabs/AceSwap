@@ -13,7 +13,7 @@ contract Factory721 is Ownable {
   address public router;
 
   //@param routerFeeRatio: fee ratio of router
-  uint256 public routerFeeRatio = 0.20e18;
+  uint256 public routerFeeRatio = 0.15e18;
 
   //EVENT
   event CreatePool(address indexed pool, address indexed collection);
@@ -51,8 +51,7 @@ contract Factory721 is Ownable {
       )
     );
 
-    IRouter(router).addCollectionPoolList(_collection, _pool);
-
+    IRouter(router).addOtherStakePool(_pool);
     emit CreatePool(_pool, _collection);
   }
 

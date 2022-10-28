@@ -13,5 +13,5 @@ interface IRouter {
     view
     returns (bool);
 
-  function addCollectionPoolList(address collection, address pool) external;
+  function addOtherStakePool(address pool) external;
 }
