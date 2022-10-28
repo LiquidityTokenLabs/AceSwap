@@ -37,7 +37,6 @@ interface IPool721 {
   }
 
   struct PoolInfo {
-    address bondingCurve;
     uint128 spotPrice;
     uint128 delta;
     uint256 divergence;
@@ -94,17 +93,15 @@ interface IPool721 {
     external
     returns (UserInfo calldata userInfo);
 
-  function getCalcBuyInfo(
-    uint256 itemNum,
-    uint128 spotPrice,
-    uint256 divergence
-  ) external view returns (uint256);
+  function getCalcBuyInfo(uint256 itemNum, uint128 spotPrice)
+    external
+    view
+    returns (uint256);
 
-  function getCalcSellInfo(
-    uint256 itemNum,
-    uint128 spotPrice,
-    uint256 divergence
-  ) external view returns (uint256);
+  function getCalcSellInfo(uint256 itemNum, uint128 spotPrice)
+    external
+    view
+    returns (uint256);
 
   function getUserStakeNFTfee(address user)
     external

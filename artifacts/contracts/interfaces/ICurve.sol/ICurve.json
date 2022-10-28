@@ -17,7 +17,7 @@
         },
         {
           "internalType": "uint256",
-          "name": "divergence",
+          "name": "spread",
           "type": "uint256"
         },
         {
@@ -56,7 +56,7 @@
         },
         {
           "internalType": "uint256",
-          "name": "divergence",
+          "name": "spread",
           "type": "uint256"
         },
         {
@@ -110,7 +110,7 @@
         },
         {
           "internalType": "uint256",
-          "name": "divergence",
+          "name": "spread",
           "type": "uint256"
         },
         {
@@ -149,7 +149,7 @@
         },
         {
           "internalType": "uint256",
-          "name": "divergence",
+          "name": "spread",
           "type": "uint256"
         },
         {

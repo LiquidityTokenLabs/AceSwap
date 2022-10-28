@@ -10,7 +10,7 @@ contract LinearCurve is CurveErrorCodes {
   function getBuyInfo(
     uint128 spotPrice,
     uint128 delta,
-    uint256 divergence,
+    uint256 spread,
     uint256 numItems
   )
     external
@@ -19,7 +19,7 @@ contract LinearCurve is CurveErrorCodes {
       Error error,
       uint128 newSpotPrice,
       uint128 newDelta,
-      uint256 newDivergence,
+      uint256 newSpread,
       uint256 totalFee
     )
   {
@@ -39,7 +39,7 @@ contract LinearCurve is CurveErrorCodes {
 
     newDelta = delta;
 
-    newDivergence = divergence;
+    newSpread = spread;
 
     totalFee = numItems * spotPrice + (numItems * (numItems - 1) * delta) / 2;
 
@@ -49,7 +49,7 @@ contract LinearCurve is CurveErrorCodes {
   function getSellInfo(
     uint128 spotPrice,
     uint128 delta,
-    uint256 divergence,
+    uint256 spread,
     uint256 numItems
   )
     external
@@ -58,7 +58,7 @@ contract LinearCurve is CurveErrorCodes {
       Error error,
       uint128 newSpotPrice,
       uint128 newDelta,
-      uint256 newDivergence,
+      uint256 newSpread,
       uint256 totalFee
     )
   {
@@ -81,13 +81,16 @@ contract LinearCurve is CurveErrorCodes {
 
     newDelta = delta;
 
-    newDivergence = divergence;
+    newSpread = spread;
 
     uint256 tmpTotalFee = numItems *
       (spotPrice - delta) -
       (numItems * (numItems - 1) * delta) /
       2;
-    totalFee = tmpTotalFee.fmul(divergence, FixedPointMathLib.WAD);
+    totalFee = tmpTotalFee.fmul(
+      FixedPointMathLib.WAD - spread,
+      FixedPointMathLib.WAD
+    );
 
     error = Error.OK;
   }
@@ -95,17 +98,14 @@ contract LinearCurve is CurveErrorCodes {
   function getBuyFeeInfo(
     uint128 spotPrice,
     uint128 delta,
-    uint256 divergence,
+    uint256 spread,
     uint256 numItems
   ) external pure returns (Error error, uint256 totalFee) {
     uint256 a = numItems *
       (spotPrice - delta) -
       (numItems * (numItems - 1) * delta) /
       2;
-    totalFee = a.fmul(
-      (FixedPointMathLib.WAD - divergence),
-      FixedPointMathLib.WAD
-    );
+    totalFee = a.fmul(spread, FixedPointMathLib.WAD);
 
     error = Error.OK;
   }
@@ -113,14 +113,11 @@ contract LinearCurve is CurveErrorCodes {
   function getSellFeeInfo(
     uint128 spotPrice,
     uint128 delta,
-    uint256 divergence,
+    uint256 spread,
     uint256 numItems
   ) external pure returns (Error error, uint256 totalFee) {
     uint256 total = (numItems / 2) * (2 * spotPrice + (numItems - 1) * delta);
-    totalFee = total.fmul(
-      (FixedPointMathLib.WAD - divergence),
-      FixedPointMathLib.WAD
-    );
+    totalFee = total.fmul(spread, FixedPointMathLib.WAD);
 
     error = Error.OK;
   }

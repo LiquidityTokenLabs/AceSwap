@@ -6,7 +6,7 @@ interface ICurve {
   function getBuyInfo(
     uint128 spotPrice,
     uint128 delta,
-    uint256 divergence,
+    uint256 spread,
     uint256 numItems
   )
     external
@@ -22,7 +22,7 @@ interface ICurve {
   function getSellInfo(
     uint128 spotPrice,
     uint128 delta,
-    uint256 divergence,
+    uint256 spread,
     uint256 numItems
   )
     external
@@ -38,14 +38,14 @@ interface ICurve {
   function getBuyFeeInfo(
     uint128 spotPrice,
     uint128 delta,
-    uint256 divergence,
+    uint256 spread,
     uint256 numItems
   ) external pure returns (CurveErrorCodes.Error error, uint256 totalFee);
 
   function getSellFeeInfo(
     uint128 spotPrice,
     uint128 delta,
-    uint256 divergence,
+    uint256 spread,
     uint256 numItems
   ) external view returns (CurveErrorCodes.Error error, uint256 totalFee);
 }

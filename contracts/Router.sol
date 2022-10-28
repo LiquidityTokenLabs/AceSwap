@@ -14,7 +14,7 @@ contract Router is Ownable {
   uint256 public totalProtocolFee;
 
   //@param supportFeeRatio: support fee ratio
-  uint256 public supporterFeeRatio = 5e16;
+  uint256 public supporterFeeRatio = 30e16;
 
   //@param list of collection
   address[] public collectionList;
@@ -114,6 +114,24 @@ contract Router is Ownable {
     emit StakeNFT(msg.sender, _pool, _tokenIds.length, _tokenIds);
   }
 
+  function batchStakeNFT(
+    address[] calldata _poolList,
+    input[] calldata InputArray
+  ) external {
+    for (uint256 i = 0; i < _poolList.length; ) {
+      IPool721(_poolList[i]).stakeNFT(InputArray[i].tokenIds, msg.sender);
+      emit StakeNFT(
+        msg.sender,
+        _poolList[i],
+        InputArray[i].tokenIds.length,
+        InputArray[i].tokenIds
+      );
+      unchecked {
+        ++i;
+      }
+    }
+  }
+
   //@notice swap NFT → FT
   function swapNFTforFT(
     address _pool,
@@ -124,8 +142,7 @@ contract Router is Ownable {
     IPool721.PoolInfo memory _poolInfo = IPool721(_pool).getPoolInfo();
     uint256 _totalFee = IPool721(_pool).getCalcSellInfo(
       _tokenIds.length,
-      _poolInfo.spotPrice,
-      _poolInfo.divergence
+      _poolInfo.spotPrice
     );
 
     uint256 profitAmount = IPool721(_pool).swapNFTforFT(
@@ -146,8 +163,7 @@ contract Router is Ownable {
     IPool721.PoolInfo memory _poolInfo = IPool721(_pool).getPoolInfo();
     uint256 _totalFee = IPool721(_pool).getCalcBuyInfo(
       _tokenIds.length,
-      _poolInfo.spotPrice,
-      _poolInfo.divergence
+      _poolInfo.spotPrice
     );
 
     uint256 profitAmount = IPool721(_pool).swapFTforNFT{value: msg.value}(
@@ -164,7 +180,7 @@ contract Router is Ownable {
     input[] calldata InputArray,
     uint256[] calldata _minExpects,
     address _supporter
-  ) public {
+  ) external payable {
     uint256 totalProfitAmount;
     for (uint256 i = 0; i < _poolList.length; ) {
       uint256 profitAmount = IPool721(_poolList[i]).swapNFTforFT(
@@ -192,14 +208,21 @@ contract Router is Ownable {
     address[] calldata _poolList,
     input[] calldata InputArray,
     address _supporter
-  ) public {
+  ) external payable {
     uint256 totalProfitAmount;
+    uint256 _remainFee = msg.value;
     for (uint256 i = 0; i < _poolList.length; ) {
-      uint256 profitAmount = IPool721(_poolList[i]).swapFTforNFT(
-        InputArray[i].tokenIds,
-        msg.sender
+      IPool721.PoolInfo memory _poolInfo = IPool721(_poolList[i]).getPoolInfo();
+      uint256 _totalFee = IPool721(_poolList[i]).getCalcBuyInfo(
+        InputArray[i].tokenIds.length,
+        _poolInfo.spotPrice
       );
+      require(_remainFee >= _totalFee, 'Not Value');
+      uint256 profitAmount = IPool721(_poolList[i]).swapFTforNFT{
+        value: _totalFee
+      }(InputArray[i].tokenIds, msg.sender);
       totalProfitAmount += profitAmount;
+      _remainFee -= _totalFee;
       emit SwapFTforNFT(
         msg.sender,
         _poolList[i],
@@ -216,6 +239,7 @@ contract Router is Ownable {
 
   //@notice withdraw NFT and Fee
   function withdrawNFT(address _pool, uint256[] calldata _tokenIds) public {
+    address _collection = IPool721(_pool).collection();
     IPool721.UserInfo memory _userInfo = IPool721(_pool).getUserInfo(
       msg.sender
     );
@@ -223,30 +247,9 @@ contract Router is Ownable {
     _removeAddress(userStakePoolList[msg.sender].stakeNFTpools, _pool);
 
     IPool721(_pool).withdrawNFT(_tokenIds, msg.sender);
-    emit WithdrawNFT(
-      msg.sender,
-      _pool,
-      _tokenIds,
-      _userInfo.userInitBuyNum,
-      _userFee
-    );
-  }
 
-  //@notice withdraw FT and Fee
-  function withdrawFT(
-    address _pool,
-    uint256 _userSellNum,
-    uint256[] calldata _tokenIds
-  ) public {
-    IPool721.UserInfo memory _userInfo = IPool721(_pool).getUserInfo(
-      msg.sender
-    );
-    uint256 _userFee = IPool721(_pool).getUserStakeFTfee(msg.sender);
-
-    _removeAddress(userStakePoolList[msg.sender].stakeFTpools, _pool);
     (bool _tmpBool, bool _isOtherStake) = _checkPool(_pool);
     if (_tmpBool == true) {
-      address _collection = IPool721(_pool).collection();
       if (_isOtherStake == true) {
         _removeAddress(collectionPoolList[_collection].otherStakePools, _pool);
       } else if (_isOtherStake == false) {
@@ -256,39 +259,41 @@ contract Router is Ownable {
         );
       }
     }
-    IPool721(_pool).withdrawFT(_userSellNum, _tokenIds, msg.sender);
-    emit WithdrawFT(
+    emit WithdrawNFT(
       msg.sender,
       _pool,
       _tokenIds,
-      _userSellNum,
-      _userInfo.userInitSellAmount,
+      _userInfo.userInitBuyNum,
       _userFee
     );
   }
 
   //@notice withdraw protocol fee
   function withdrawProtocolFee() public payable onlyOwner {
+    uint256 _protocolFee = totalProtocolFee;
     //check
     require(totalProtocolFee > 0, 'Not Fee');
+    require(_protocolFee > 0, 'Not Fee');
 
     //effect
     totalProtocolFee = 0;
 
     //intaraction
-    payable(msg.sender).transfer(totalProtocolFee);
+    payable(msg.sender).transfer(_protocolFee);
   }
 
   //@notice withdraw support fee
-  function withdrawSupportFee() public payable {
+  function withdrawSupportFee() external payable {
+    uint256 _supporterFee = supporterFee[msg.sender];
     //check
     require(isSupporterApprove[msg.sender], 'Not Approve');
+    require(_supporterFee > 0, 'Not Fee');
 
     //effect
     supporterFee[msg.sender] = 0;
 
     //intaraction
-    payable(msg.sender).transfer(supporterFee[msg.sender]);
+    payable(msg.sender).transfer(_supporterFee);
   }
 
   //GET

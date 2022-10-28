@@ -28,20 +28,11 @@ contract Pool721 {
   //@param sellEventNum: FT->NFT event num
   uint256 public sellEventNum;
 
-  //param totalFTpoint
-  uint256 public totalFTpoint;
-
   //@param totalNFTpoint: total Point of LP
   uint256 public totalNFTpoint;
 
-  //@param stakeFTprice
-  uint128 public stakeFTprice;
-
   //@param stakeNFTprice
   uint128 public stakeNFTprice;
-
-  //@param total fee of FT
-  uint256 public totalFTfee;
 
   //@param total fee of NFT
   uint256 public totalNFTfee;
@@ -70,7 +61,7 @@ contract Pool721 {
   struct PoolInfo {
     uint128 spotPrice;
     uint128 delta;
-    uint256 divergence;
+    uint256 spread;
     uint256 buyNum;
     uint256 sellNum;
   }
@@ -82,7 +73,7 @@ contract Pool721 {
     address _bondingCurve,
     uint128 _spotPrice,
     uint128 _delta,
-    uint256 _divergence,
+    uint256 _spread,
     uint256 _protocolFeeRatio,
     address _router
   ) {
@@ -90,11 +81,11 @@ contract Pool721 {
     bondingCurve = _bondingCurve;
     poolInfo.spotPrice = _spotPrice;
     stakeNFTprice = _spotPrice;
-    stakeFTprice = _spotPrice;
     poolInfo.delta = _delta;
-    poolInfo.divergence = _divergence;
+    poolInfo.spread = _spread;
     protocolFeeRatio = _protocolFeeRatio;
     router = _router;
+    isOtherStake = true;
   }
 
   modifier onlyRouter() {
@@ -120,7 +111,7 @@ contract Pool721 {
     ) = ICurve(bondingCurve).getBuyInfo(
         stakeNFTprice,
         poolInfo.delta,
-        poolInfo.divergence,
+        poolInfo.spread,
         _itemNum
       );
     require(error == CurveErrorCodes.Error.OK, 'Bonding error');
@@ -152,12 +143,12 @@ contract Pool721 {
       CurveErrorCodes.Error error,
       uint128 _newSpotPrice,
       uint128 _newDelta,
-      uint256 _newDivergence,
+      uint256 _newSpread,
       uint256 _totalFee
     ) = ICurve(bondingCurve).getBuyInfo(
         poolInfo.spotPrice,
         poolInfo.delta,
-        poolInfo.divergence,
+        poolInfo.spread,
         _itemNum
       );
     require(error == CurveErrorCodes.Error.OK, 'Bonding error');
@@ -171,7 +162,7 @@ contract Pool721 {
     poolInfo.buyNum -= _itemNum;
     poolInfo.sellNum += _itemNum;
     _protocolFee = _calcProfit();
-    _updatePoolInfo(_newSpotPrice, _newDelta, _newDivergence);
+    _updatePoolInfo(_newSpotPrice, _newDelta, _newSpread);
 
     //intaraction
     payable(_user).transfer(msg.value - _totalFee);
@@ -193,12 +184,12 @@ contract Pool721 {
       CurveErrorCodes.Error error,
       uint128 _newSpotPrice,
       uint128 _newDelta,
-      uint256 _newDivergence,
+      uint256 _newSpread,
       uint256 _totalFee
     ) = ICurve(bondingCurve).getSellInfo(
         poolInfo.spotPrice,
         poolInfo.delta,
-        poolInfo.divergence,
+        poolInfo.spread,
         _itemNum
       );
     require(error == CurveErrorCodes.Error.OK, 'Bonding error');
@@ -213,7 +204,7 @@ contract Pool721 {
     poolInfo.sellNum -= _itemNum;
     poolInfo.buyNum += _itemNum;
     _protocolFee = _calcProfit();
-    _updatePoolInfo(_newSpotPrice, _newDelta, _newDivergence);
+    _updatePoolInfo(_newSpotPrice, _newDelta, _newSpread);
 
     //intaraction
     _sendNFTs(_tokenIds, _itemNum, _user, address(this));
@@ -235,7 +226,9 @@ contract Pool721 {
     //check
     require(poolInfo.buyNum >= _itemNum, 'Pool not enough NFT');
     require(
-      userInfo[_user].userInitBuyNum == _itemNum || poolInfo.buyNum == _itemNum,
+      userInfo[_user].userInitBuyNum == _itemNum ||
+        (userInfo[_user].userInitBuyNum > _itemNum &&
+          poolInfo.buyNum == _itemNum),
       'Something is wrong.'
     );
 
@@ -257,7 +250,7 @@ contract Pool721 {
       ) = ICurve(bondingCurve).getSellInfo(
           stakeNFTprice,
           poolInfo.delta,
-          FixedPointMathLib.WAD,
+          0,
           _userNum
         );
       require(error == CurveErrorCodes.Error.OK, 'Bonding error');
@@ -272,30 +265,8 @@ contract Pool721 {
       //calc FT instead NFT
       (CurveErrorCodes.Error error, , , , uint256 _totalFee2) = ICurve(
         bondingCurve
-      ).getSellInfo(
-          stakeNFTprice,
-          poolInfo.delta,
-          FixedPointMathLib.WAD,
-          _subItemNum
-        );
+      ).getSellInfo(stakeNFTprice, poolInfo.delta, 0, _subItemNum);
       require(error == CurveErrorCodes.Error.OK, 'Bonding error');
-
-      //up stakeFTprice
-      (
-        CurveErrorCodes.Error error2,
-        uint128 _newstakeFTprice,
-        uint128 _newDelta,
-        ,
-
-      ) = ICurve(bondingCurve).getBuyInfo(
-          stakeFTprice,
-          poolInfo.delta,
-          FixedPointMathLib.WAD,
-          _subItemNum
-        );
-      require(error2 == CurveErrorCodes.Error.OK, 'Bonding error');
-
-      _updateStakeInfo(1, _newstakeFTprice, _newDelta);
 
       poolInfo.sellNum -= _subItemNum;
       buyEventNum -= _subItemNum;
@@ -310,101 +281,6 @@ contract Pool721 {
 
     if (_userFee > 0) {
       payable(_user).transfer(_userFee);
-    }
-  }
-
-  //@notice withdraw FT
-  function withdrawFT(
-    uint256 _userSellNum,
-    uint256[] calldata _tokenIds,
-    address _user
-  ) external payable onlyRouter {
-    uint256 _itemNum = _tokenIds.length;
-    uint256 _userNum = userInfo[_user].userInitSellNum;
-    uint256 _userSellAmount = userInfo[_user].userInitSellAmount;
-    uint256 _fee = 0;
-
-    //check
-    require(poolInfo.sellNum >= _userSellNum, 'Pool not enough NFT');
-    require(
-      userInfo[_user].userInitSellNum == _userSellNum ||
-        poolInfo.sellNum == _userSellNum,
-      'Something is wrong.'
-    );
-    require(userInfo[_user].userInitSellNum - _userSellNum == _itemNum, 'true');
-
-    //effect
-    poolInfo.sellNum -= _userSellNum;
-    userInfo[_user].userInitSellNum = 0;
-    userInfo[_user].userInitSellAmount = 0;
-    totalFTpoint -= userInfo[_user].userFTpoint;
-
-    userInfo[_user].userFTpoint = 0;
-
-    //up stakeFTprice
-    if (_userSellNum != 0) {
-      (
-        CurveErrorCodes.Error error,
-        uint128 _newstakeFTprice,
-        uint128 _newDelta,
-        ,
-
-      ) = ICurve(bondingCurve).getBuyInfo(
-          stakeFTprice,
-          poolInfo.delta,
-          FixedPointMathLib.WAD,
-          _userSellNum
-        );
-      require(error == CurveErrorCodes.Error.OK, 'Bonding error');
-
-      _updateStakeInfo(1, _newstakeFTprice, _newDelta);
-    }
-
-    //if pool not liquidity FT
-    if (_userSellNum < _userNum) {
-      (CurveErrorCodes.Error error, , , , uint256 _totalCost) = ICurve(
-        bondingCurve
-      ).getBuyInfo(
-          stakeFTprice,
-          poolInfo.delta,
-          FixedPointMathLib.WAD,
-          (_userNum - _userSellNum)
-        );
-      require(error == CurveErrorCodes.Error.OK, 'Bonding error');
-
-      (
-        CurveErrorCodes.Error updateError,
-        uint128 _newstakeNFTprice,
-        ,
-        ,
-
-      ) = ICurve(bondingCurve).getSellInfo(
-          stakeNFTprice,
-          poolInfo.delta,
-          FixedPointMathLib.WAD,
-          _itemNum
-        );
-      require(updateError == CurveErrorCodes.Error.OK, 'Bonding error');
-
-      poolInfo.buyNum -= _itemNum;
-      sellEventNum -= _itemNum;
-
-      _updateStakeInfo(2, _newstakeNFTprice, 0);
-
-      _fee = _totalCost;
-    }
-    {
-      uint256 _userFee = _calcFTfee(_user);
-      totalFTfee -= _userFee;
-      if (_userFee > 0) {
-        payable(_user).transfer(_userFee);
-      }
-    }
-    if (_fee < _userSellAmount) {
-      payable(_user).transfer(_userSellAmount - _fee);
-    }
-    if (_itemNum > 0) {
-      _sendNFTs(_tokenIds, _itemNum, address(this), _user);
     }
   }
 
@@ -433,17 +309,6 @@ contract Pool721 {
     }
   }
 
-  //@notice calc fee from FT point
-  function _calcFTfee(address _user) internal view returns (uint256 _userFee) {
-    uint256 _tmpLP = ((totalFTpoint + totalFTfee) *
-      userInfo[_user].userFTpoint) / totalFTpoint;
-    if (_tmpLP > userInfo[_user].userFTpoint) {
-      _userFee = _tmpLP - userInfo[_user].userFTpoint;
-    } else {
-      _userFee = 0;
-    }
-  }
-
   //@notice calc profit
   function _calcProfit() internal returns (uint256 protocolFee) {
     if (buyEventNum > 0 && sellEventNum > 0) {
@@ -453,13 +318,13 @@ contract Pool721 {
         ).getBuyFeeInfo(
             poolInfo.spotPrice,
             poolInfo.delta,
-            poolInfo.divergence,
+            poolInfo.spread,
             sellEventNum
           );
         require(calcProfitError == CurveErrorCodes.Error.OK, 'Bonding error');
 
         protocolFee = tmpFee.fmul(protocolFeeRatio, FixedPointMathLib.WAD);
-        _calcDisFee(tmpFee - protocolFee);
+        totalNFTfee += (tmpFee - protocolFee);
         buyEventNum -= sellEventNum;
         sellEventNum = 0;
       } else if (sellEventNum > buyEventNum) {
@@ -468,27 +333,16 @@ contract Pool721 {
         ).getSellFeeInfo(
             poolInfo.spotPrice,
             poolInfo.delta,
-            poolInfo.divergence,
+            poolInfo.spread,
             buyEventNum
           );
         require(calcProfitError == CurveErrorCodes.Error.OK, 'Bonding error');
 
         protocolFee = tmpFee.fmul(protocolFeeRatio, FixedPointMathLib.WAD);
-        _calcDisFee(tmpFee - protocolFee);
+        totalNFTfee += (tmpFee - protocolFee);
         sellEventNum -= buyEventNum;
         buyEventNum = 0;
       }
-    }
-  }
-
-  function _calcDisFee(uint256 tmpTotalFee) internal {
-    if (totalFTpoint == 0) {
-      totalNFTfee += tmpTotalFee;
-    } else if (totalNFTpoint == 0) {
-      totalFTfee += tmpTotalFee;
-    } else {
-      totalFTfee += tmpTotalFee / 2;
-      totalNFTfee += tmpTotalFee - tmpTotalFee / 2;
     }
   }
 
@@ -496,7 +350,7 @@ contract Pool721 {
   function _updatePoolInfo(
     uint128 _newSpotPrice,
     uint128 _newDelta,
-    uint256 _newDivergence
+    uint256 _newSpread
   ) internal {
     if (poolInfo.spotPrice != _newSpotPrice) {
       poolInfo.spotPrice = _newSpotPrice;
@@ -504,8 +358,8 @@ contract Pool721 {
     if (poolInfo.delta != _newDelta && _newDelta != 0) {
       poolInfo.delta = _newDelta;
     }
-    if (poolInfo.divergence != _newDivergence && _newDivergence != 0) {
-      poolInfo.divergence = _newDivergence;
+    if (poolInfo.spread != _newSpread && _newSpread != 0) {
+      poolInfo.spread = _newSpread;
     }
   }
 
@@ -515,9 +369,6 @@ contract Pool721 {
     uint128 _newStakePrice,
     uint128 _newDelta
   ) internal {
-    if (stakeFTprice != _newStakePrice && _select == 1) {
-      stakeFTprice = _newStakePrice;
-    }
     if (stakeNFTprice != _newStakePrice && _select == 2) {
       stakeNFTprice = _newStakePrice;
     }
@@ -571,30 +422,30 @@ contract Pool721 {
 
   //GET
   //@notice get total buy price
-  function getCalcBuyInfo(
-    uint256 _itemNum,
-    uint128 _spotPrice,
-    uint256 _divergence
-  ) external view returns (uint256) {
+  function getCalcBuyInfo(uint256 _itemNum, uint128 _spotPrice)
+    external
+    view
+    returns (uint256)
+  {
     (, , , , uint256 _totalFee) = ICurve(bondingCurve).getBuyInfo(
       _spotPrice,
       poolInfo.delta,
-      _divergence,
+      poolInfo.spread,
       _itemNum
     );
     return _totalFee;
   }
 
   //@notice get total sell price
-  function getCalcSellInfo(
-    uint256 _itemNum,
-    uint128 _spotPrice,
-    uint256 _divergence
-  ) external view returns (uint256) {
+  function getCalcSellInfo(uint256 _itemNum, uint128 _spotPrice)
+    external
+    view
+    returns (uint256)
+  {
     (, , , , uint256 _totalFee) = ICurve(bondingCurve).getSellInfo(
       _spotPrice,
       poolInfo.delta,
-      _divergence,
+      poolInfo.spread,
       _itemNum
     );
     return _totalFee;
@@ -610,20 +461,6 @@ contract Pool721 {
       userInfo[_user].userNFTpoint) / totalNFTpoint;
     if (_tmpLP > userInfo[_user].userNFTpoint) {
       _userFee = _tmpLP - userInfo[_user].userNFTpoint;
-    } else {
-      _userFee = 0;
-    }
-  }
-
-  function getUserStakeFTfee(address _user)
-    external
-    view
-    returns (uint256 _userFee)
-  {
-    uint256 _tmpLP = ((totalFTpoint + totalFTfee) *
-      userInfo[_user].userFTpoint) / totalFTpoint;
-    if (_tmpLP > userInfo[_user].userFTpoint) {
-      _userFee = _tmpLP - userInfo[_user].userFTpoint;
     } else {
       _userFee = 0;
     }
