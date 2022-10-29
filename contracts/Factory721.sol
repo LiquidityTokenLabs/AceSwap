@@ -30,7 +30,7 @@ contract Factory721 is Ownable {
     address _bondingCurve,
     uint128 _spotPrice,
     uint128 _delta,
-    uint256 _divergence
+    uint256 _spread
   ) external {
     require(
       IERC165(_collection).supportsInterface(type(IERC721).interfaceId),
@@ -45,7 +45,7 @@ contract Factory721 is Ownable {
         _bondingCurve,
         _spotPrice,
         _delta,
-        _divergence,
+        _spread,
         routerFeeRatio,
         router
       )
