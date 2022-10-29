@@ -218,10 +218,11 @@ contract Pool721 {
     external
     payable
     onlyRouter
+    returns (uint256 _userFee)
   {
     uint256 _itemNum = _tokenIds.length;
     uint256 _userNum = userInfo[_user].userInitBuyNum;
-    uint256 _userFee = _calcNFTfee(_user);
+    _userFee = _calcNFTfee(_user);
 
     //check
     require(poolInfo.buyNum >= _itemNum, 'Pool not enough NFT');
@@ -466,6 +467,11 @@ contract Pool721 {
     }
   }
 
+  //@notice get all tokenIds
+  function getAllHoldIds() external view returns (uint256[] memory) {
+    return holdIds;
+  }
+
   function getPoolInfo() external view returns (PoolInfo memory) {
     return poolInfo;
   }
@@ -474,7 +480,7 @@ contract Pool721 {
     return userInfo[_user];
   }
 
-  function setRouter(address _newRouter) public onlyRouter {
+  function setRouter(address _newRouter) external onlyRouter {
     router = _newRouter;
   }
 

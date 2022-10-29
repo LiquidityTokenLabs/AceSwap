@@ -453,7 +453,7 @@ describe('結合テスト', function () {
     it('サポーターFeeが適切にもらえる', async () => {
       await expect(
         router.connect(supporter2).withdrawSupportFee()
-      ).to.revertedWith('Not Approve');
+      ).to.revertedWith('Not Fee');
     });
     it('ルーター内残高', async () => {
       let balance = await ethers.provider.getBalance(router.address);

@@ -7,6 +7,8 @@ interface IPool721 {
 
   function collection() external returns (address);
 
+  function bondingCurve() external returns (address);
+
   function isOtherStake() external returns (bool);
 
   function router() external returns (address);
@@ -15,15 +17,9 @@ interface IPool721 {
 
   function buyEventNum() external returns (uint256);
 
-  function totalFTpoint() external returns (uint256);
-
   function totalNFTpoint() external returns (uint256);
 
-  function stakeFTprice() external returns (uint128);
-
   function stakeNFTprice() external returns (uint128);
-
-  function totalFTfee() external returns (uint256);
 
   function totalNFTfee() external returns (uint256);
 
@@ -44,24 +40,6 @@ interface IPool721 {
     uint256 sellNum;
   }
 
-  //EVENT
-  event StakeNFT(address user, uint256[] tokenIds);
-  event SwapNFTforFT(address user, uint256[] tokenIds, uint256 totalFee);
-  event SwapFTforNFT(address user, uint256[] tokenIds);
-  event WithdrawNFTandFee(address user, uint256[] tokenIds, uint256 userFee);
-  event WithdrawNFTandFTandFee(
-    address user,
-    uint256[] tokenIds,
-    uint256 userFee
-  );
-  event WithdrawFTandFee(address user, uint256 userSellAmount, uint256 userFee);
-  event WithdrawFTandNFTandFee(
-    address user,
-    uint256 userSellAmount,
-    uint256[] tokenIds,
-    uint256 userFee
-  );
-
   //MAIN
   function stakeNFT(uint256[] calldata tokenIds, address user) external;
 
@@ -78,15 +56,12 @@ interface IPool721 {
 
   function withdrawNFT(uint256[] calldata tokenIds, address user)
     external
-    payable;
-
-  function withdrawFT(
-    uint256 userSellNum,
-    uint256[] calldata tokenIds,
-    address user
-  ) external payable;
+    payable
+    returns (uint256 userFee);
 
   //GET
+  function getAllHoldIds() external view returns (uint256[] memory);
+
   function getPoolInfo() external returns (PoolInfo calldata poolInfo);
 
   function getUserInfo(address user)
@@ -108,11 +83,6 @@ interface IPool721 {
     view
     returns (uint256 userFee);
 
-  function getUserStakeFTfee(address user)
-    external
-    view
-    returns (uint256 userFee);
-
   //SET
-  function setRouterAddress(address newRouter) external;
+  function setRouter(address _newRouter) external;
 }

@@ -82,17 +82,9 @@ contract Router is Ownable {
     address indexed user,
     address indexed pool,
     uint256[] tokenIds,
-    uint256 userNum,
     uint256 userFee
   );
-  event WithdrawFT(
-    address indexed user,
-    address indexed pool,
-    uint256[] tokenIds,
-    uint256 userNum,
-    uint256 userAmount,
-    uint256 userFee
-  );
+
   event Received(address, uint256);
 
   modifier onlyFactory() {
@@ -240,13 +232,9 @@ contract Router is Ownable {
   //@notice withdraw NFT and Fee
   function withdrawNFT(address _pool, uint256[] calldata _tokenIds) public {
     address _collection = IPool721(_pool).collection();
-    IPool721.UserInfo memory _userInfo = IPool721(_pool).getUserInfo(
-      msg.sender
-    );
-    uint256 _userFee = IPool721(_pool).getUserStakeNFTfee(msg.sender);
-    _removeAddress(userStakePoolList[msg.sender].stakeNFTpools, _pool);
 
-    IPool721(_pool).withdrawNFT(_tokenIds, msg.sender);
+    _removeAddress(userStakePoolList[msg.sender].stakeNFTpools, _pool);
+    uint256 _userFee = IPool721(_pool).withdrawNFT(_tokenIds, msg.sender);
 
     (bool _tmpBool, bool _isOtherStake) = _checkPool(_pool);
     if (_tmpBool == true) {
@@ -259,20 +247,14 @@ contract Router is Ownable {
         );
       }
     }
-    emit WithdrawNFT(
-      msg.sender,
-      _pool,
-      _tokenIds,
-      _userInfo.userInitBuyNum,
-      _userFee
-    );
+
+    emit WithdrawNFT(msg.sender, _pool, _tokenIds, _userFee);
   }
 
   //@notice withdraw protocol fee
   function withdrawProtocolFee() public payable onlyOwner {
     uint256 _protocolFee = totalProtocolFee;
     //check
-    require(totalProtocolFee > 0, 'Not Fee');
     require(_protocolFee > 0, 'Not Fee');
 
     //effect
@@ -286,7 +268,6 @@ contract Router is Ownable {
   function withdrawSupportFee() external payable {
     uint256 _supporterFee = supporterFee[msg.sender];
     //check
-    require(isSupporterApprove[msg.sender], 'Not Approve');
     require(_supporterFee > 0, 'Not Fee');
 
     //effect
